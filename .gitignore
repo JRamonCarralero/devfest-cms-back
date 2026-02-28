@@ -1,0 +1,11 @@
+# Compiled binaries
+/dist/
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Config and secrets
+.env
