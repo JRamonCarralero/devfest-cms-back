@@ -1,7 +1,10 @@
 package main
 
 import (
+	"devfest/internal/infrastructure/db"
+	"fmt"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +16,28 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// ToDo: implement database connection
+	// Database Connection
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbname := os.Getenv("DB_NAME")
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require&pgbouncer=true",
+		url.PathEscape(user),
+		url.PathEscape(pass),
+		host,
+		dbPort,
+		dbname,
+	)
+
+	dbPool, err := db.NewPostgresClient(dsn)
+	if err != nil {
+		log.Fatalf("❌ Error: %v", err)
+	}
+	defer dbPool.Close()
+
+	log.Println("🚀 Connection secure and success!")
 
 	// ToDo: implement routes and inject dependencies
 
