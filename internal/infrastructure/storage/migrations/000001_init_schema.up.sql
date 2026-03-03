@@ -110,3 +110,64 @@ CREATE TABLE IF NOT EXISTS scheduler (
     created_by UUID,
     updated_by UUID
 );
+
+------------- TRIGGERS! -------------
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+DO $$ 
+BEGIN
+    -- Events
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_events') THEN
+        CREATE TRIGGER trig_update_events BEFORE UPDATE ON events 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Persons
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_persons') THEN
+        CREATE TRIGGER trig_update_persons BEFORE UPDATE ON persons 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Speakers
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_speakers') THEN
+        CREATE TRIGGER trig_update_speakers BEFORE UPDATE ON speakers 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Developers
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_developers') THEN
+        CREATE TRIGGER trig_update_developers BEFORE UPDATE ON developers 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Collaborators
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_collaborators') THEN
+        CREATE TRIGGER trig_update_collaborators BEFORE UPDATE ON collaborators 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Sponsors
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_sponsors') THEN
+        CREATE TRIGGER trig_update_sponsors BEFORE UPDATE ON sponsors 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Talks
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talks') THEN
+        CREATE TRIGGER trig_update_talks BEFORE UPDATE ON talks 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Scheduler
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_scheduler') THEN
+        CREATE TRIGGER trig_update_scheduler BEFORE UPDATE ON scheduler 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+END $$;
