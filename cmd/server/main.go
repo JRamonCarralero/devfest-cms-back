@@ -1,7 +1,7 @@
 package main
 
 import (
-	"devfest/internal/infrastructure/db"
+	db "devfest/internal/infrastructure/storage"
 	"fmt"
 	"log"
 	"net/url"
@@ -17,6 +17,7 @@ func main() {
 	}
 
 	// Database Connection
+
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASSWORD")
 	host := os.Getenv("DB_HOST")
@@ -38,6 +39,14 @@ func main() {
 	defer dbPool.Close()
 
 	log.Println("🚀 Connection secure and success!")
+
+	// Initialize Schema
+
+	sqlPath := "internal/infrastructure/storage/migrations/000001_init_schema.up.sql"
+
+	if err := db.InitializeSchema(dbPool, sqlPath); err != nil {
+		log.Fatalf("❌ Error: %v", err)
+	}
 
 	// ToDo: implement routes and inject dependencies
 
