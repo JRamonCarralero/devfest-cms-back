@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -35,4 +37,31 @@ func NewPostgresClient(dsn string) (*pgxpool.Pool, error) {
 
 	log.Println("✅ Connection to PostgreSQL (Supabase) established successfully")
 	return pool, nil
+}
+
+func InitializeSchema(db *pgxpool.Pool, sqlFilePath string) error {
+	log.Printf("Reading SQL schema from %s...", sqlFilePath)
+
+	content, err := os.ReadFile(sqlFilePath)
+	if err != nil {
+		return fmt.Errorf("could not read sql file: %w", err)
+	}
+
+	_, err = db.Exec(context.Background(), string(content))
+	if err != nil {
+		return fmt.Errorf("could not execute schema: %w", err)
+	}
+
+	log.Println("✅ Database schema initialized/verified successfully")
+	return nil
+}
+
+func BuildDSN(user, pass, host, port, dbname string) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require&pgbouncer=true",
+		url.PathEscape(user),
+		url.PathEscape(pass),
+		host,
+		port,
+		dbname,
+	)
 }

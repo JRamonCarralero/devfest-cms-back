@@ -1,10 +1,8 @@
 package main
 
 import (
-	"devfest/internal/infrastructure/db"
-	"fmt"
+	db "devfest/internal/infrastructure/storage"
 	"log"
-	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -17,18 +15,13 @@ func main() {
 	}
 
 	// Database Connection
-	user := os.Getenv("DB_USER")
-	pass := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbname := os.Getenv("DB_NAME")
 
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require&pgbouncer=true",
-		url.PathEscape(user),
-		url.PathEscape(pass),
-		host,
-		dbPort,
-		dbname,
+	dsn := db.BuildDSN(
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
 	)
 
 	dbPool, err := db.NewPostgresClient(dsn)
@@ -38,6 +31,14 @@ func main() {
 	defer dbPool.Close()
 
 	log.Println("🚀 Connection secure and success!")
+
+	// Initialize Schema
+
+	sqlPath := "internal/infrastructure/storage/migrations/000001_init_schema.up.sql"
+
+	if err := db.InitializeSchema(dbPool, sqlPath); err != nil {
+		log.Fatalf("❌ Error: %v", err)
+	}
 
 	// ToDo: implement routes and inject dependencies
 
