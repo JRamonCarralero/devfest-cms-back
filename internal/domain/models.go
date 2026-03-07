@@ -53,7 +53,7 @@ type Sponsor struct {
 	Name          string `json:"name"`
 	LogoURL       string `json:"logo_url"`
 	WebsiteURL    string `json:"website_url"`
-	Tier          string `json:"tier"` // 'platino', 'oro', 'bronce'...
+	Tier          string `json:"tier"`
 	OrderPriority int    `json:"order_priority"`
 	Audit
 }
@@ -71,10 +71,10 @@ type Talk struct {
 type Schedule struct {
 	ID        string     `json:"id"`
 	EventID   string     `json:"event_id"`
-	TalkID    *string    `json:"talk_id,omitempty"` // Puntero porque puede ser NULL (descansos)
+	TalkID    *string    `json:"talk_id,omitempty"`
 	StartTime time.Time  `json:"start_time"`
 	EndTime   *time.Time `json:"end_time,omitempty"`
-	Duration  string     `json:"duration"` // Ej: "45 min"
+	Duration  string     `json:"duration"`
 	Room      string     `json:"room"`
 	Audit
 }

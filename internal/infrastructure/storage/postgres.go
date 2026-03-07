@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"time"
 
@@ -53,4 +54,14 @@ func InitializeSchema(db *pgxpool.Pool, sqlFilePath string) error {
 
 	log.Println("✅ Database schema initialized/verified successfully")
 	return nil
+}
+
+func BuildDSN(user, pass, host, port, dbname string) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require&pgbouncer=true",
+		url.PathEscape(user),
+		url.PathEscape(pass),
+		host,
+		port,
+		dbname,
+	)
 }
