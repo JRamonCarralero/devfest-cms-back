@@ -3,8 +3,13 @@ package usecase
 import (
 	"context"
 	"devfest/internal/domain"
+	"devfest/internal/infrastructure/api/dtos"
 	"errors"
+
+	"github.com/google/uuid"
 )
+
+// --- Readers ---
 
 // eventInteractor implements domain.EventUsecase
 type eventInteractor struct {
@@ -18,8 +23,41 @@ func NewEventInteractor(repo domain.EventRepository) domain.EventUsecase {
 	}
 }
 
-// GetEvents validates the parameters and calls the repository
-func (i *eventInteractor) GetEvents(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]domain.Event, int64, error) {
+// GetEvents returns all events
+func (i *eventInteractor) GetEvents(ctx context.Context) ([]domain.Event, error) {
+	return i.repo.GetAll(ctx)
+}
+
+// GetByID returns an Event by its ID
+func (i *eventInteractor) GetByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
+	return i.repo.GetByID(ctx, id)
+}
+
+// GetEventBySlug validates slug and returns an Event by its slug
+func (i *eventInteractor) GetEventBySlug(ctx context.Context, slug string) (*domain.Event, error) {
+	if slug == "" {
+		return nil, errors.New("event slug is required")
+	}
+
+	event, err := i.repo.GetBySlug(ctx, slug)
+	if err != nil {
+		return nil, err
+	}
+
+	if event == nil {
+		return nil, errors.New("event not found")
+	}
+
+	return event, nil
+}
+
+// GetActiveEvents returns all active Events
+func (i *eventInteractor) GetActiveEvents(ctx context.Context) ([]domain.Event, error) {
+	return i.repo.GetActiveList(ctx)
+}
+
+// GetEventsPaged validates params and returns a page of Events
+func (i *eventInteractor) GetEventsPaged(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]domain.Event, int64, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -40,20 +78,60 @@ func (i *eventInteractor) GetEvents(ctx context.Context, search string, page, pa
 	return i.repo.ListPaged(ctx, search, page, pageSize, orderBy)
 }
 
-// GetEventBySlug validates the slug and calls the repository
-func (i *eventInteractor) GetEventBySlug(ctx context.Context, slug string) (*domain.Event, error) {
-	if slug == "" {
-		return nil, errors.New("event slug is required")
+// --- Writers ---
+
+// CreateEvent creates a new Event
+func (i *eventInteractor) CreateEvent(ctx context.Context, dto dtos.CreateEventDTO) (*domain.Event, error) {
+	isActive := true
+	if dto.IsActive != nil {
+		isActive = *dto.IsActive
 	}
 
-	event, err := i.repo.GetBySlug(ctx, slug)
+	createdEvent, err := i.repo.Create(ctx, &domain.Event{
+		Name:     dto.Name,
+		Slug:     dto.Slug,
+		IsActive: &isActive,
+		Audit: domain.Audit{
+			CreatedBy: dto.CreatedBy,
+			UpdatedBy: dto.CreatedBy,
+		},
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	if event == nil {
-		return nil, errors.New("event not found")
+	return createdEvent, nil
+}
+
+// UpdateEvent validates params and updates an Event
+func (i *eventInteractor) UpdateEvent(ctx context.Context, id uuid.UUID, dto dtos.UpdateEventDTO) (*domain.Event, error) {
+	event, err := i.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
-	return event, nil
+	if dto.Name != nil {
+		event.Name = *dto.Name
+	}
+	if dto.Slug != nil {
+		event.Slug = *dto.Slug
+	}
+	if dto.IsActive != nil {
+		event.IsActive = dto.IsActive
+	}
+
+	event.UpdatedBy = dto.UpdatedBy
+
+	updatedEvent, err := i.repo.Update(ctx, event)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedEvent, nil
+}
+
+// DeleteEvent deletes an Event by its ID
+func (i *eventInteractor) DeleteEvent(ctx context.Context, id uuid.UUID) error {
+	return i.repo.Delete(ctx, id)
 }

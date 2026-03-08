@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"devfest/internal/domain"
 	"devfest/internal/infrastructure/storage/dbgen"
 
@@ -39,28 +38,20 @@ func (r *PostgresEventRepository) GetAll(ctx context.Context) ([]domain.Event, e
 func (r *PostgresEventRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
 	row, err := r.queries.GetEventByID(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, ParseDBError(err, "Event")
 	}
 
-	event := *mapToDomain(row)
-	return &event, nil
+	return mapToDomain(row), nil
 }
 
 // GetBySlug returns an Event by its slug
 func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*domain.Event, error) {
 	row, err := r.queries.GetEventBySlug(ctx, slug)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, ParseDBError(err, "Event")
 	}
 
-	event := *mapToDomain(row)
-	return &event, nil
+	return mapToDomain(row), nil
 }
 
 // GetActive returns all active Events
@@ -120,8 +111,7 @@ func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Even
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
 	}
-	result := *mapToDomain(row)
-	return &result, nil
+	return mapToDomain(row), nil
 }
 
 func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Event) (*domain.Event, error) {
@@ -137,8 +127,7 @@ func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Even
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
 	}
-	result := *mapToDomain(row)
-	return &result, nil
+	return mapToDomain(row), nil
 }
 
 func (r *PostgresEventRepository) Delete(ctx context.Context, id uuid.UUID) error {
@@ -146,7 +135,6 @@ func (r *PostgresEventRepository) Delete(ctx context.Context, id uuid.UUID) erro
 	if err != nil {
 		return ParseDBError(err, "Event")
 	}
-
 	return nil
 }
 

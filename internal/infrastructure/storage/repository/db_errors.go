@@ -29,6 +29,6 @@ func ParseDBError(err error, entity string) error {
 		}
 	}
 
-	// 3. Error genérico
+	// Generic error
 	return domain.NewAppError(domain.TypeInternal, "Database error", err)
 }
