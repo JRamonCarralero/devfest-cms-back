@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"devfest/internal/domain"
 	"devfest/internal/infrastructure/storage/dbgen"
-	"fmt"
 )
 
 type PostgresEventRepository struct {
@@ -22,9 +21,9 @@ func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*
 	row, err := r.queries.GetEventBySlug(ctx, slug)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // O un error de dominio tipo ErrEventNotFound
+			return nil, nil
 		}
-		return nil, err
+		return nil, ParseDBError(err, "Event")
 	}
 
 	event := mapToDomain(row)
@@ -37,7 +36,7 @@ func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, 
 
 	total, err := r.queries.CountEvents(ctx, search)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error counting events: %w", err)
+		return nil, 0, ParseDBError(err, "Event")
 	}
 
 	rows, err := r.queries.ListEventsPaged(ctx, dbgen.ListEventsPagedParams{
@@ -47,7 +46,7 @@ func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, 
 		Column4: orderBy,
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("error listing events: %w", err)
+		return nil, 0, ParseDBError(err, "Event")
 	}
 
 	events := make([]domain.Event, len(rows))

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"devfest/internal/domain"
+	"devfest/internal/infrastructure/api/response"
 	"net/http"
 	"strconv"
 
@@ -26,7 +27,7 @@ func (h *EventHandler) GetEvents(c *gin.Context) {
 
 	events, total, err := h.usecase.GetEvents(c.Request.Context(), search, int32(page), int32(pageSize), orderBy)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch events"})
+		response.HandleError(c, err)
 		return
 	}
 
@@ -46,7 +47,7 @@ func (h *EventHandler) GetBySlug(c *gin.Context) {
 
 	event, err := h.usecase.GetEventBySlug(c.Request.Context(), slug)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		response.HandleError(c, err)
 		return
 	}
 
