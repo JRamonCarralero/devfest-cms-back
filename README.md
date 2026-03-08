@@ -1,5 +1,10 @@
 # Community Event API (Go + Clean Architecture)
 
+![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Gin](https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Developing-orange?style=for-the-badge)
+
 A robust and scalable backend service built with **Go** to manage technology community events. This project follows **Clean Architecture** principles and leverages **Supabase (PostgreSQL)** for reliable data persistence.
 
 ## 🚀 Tech Stack
