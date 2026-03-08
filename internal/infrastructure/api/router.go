@@ -2,6 +2,7 @@ package api
 
 import (
 	"devfest/internal/infrastructure/api/handlers"
+	"devfest/internal/infrastructure/api/middleware"
 	"devfest/internal/infrastructure/storage/dbgen"
 	"devfest/internal/infrastructure/storage/repository"
 	"devfest/internal/usecase"
@@ -12,6 +13,8 @@ import (
 
 func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	r := gin.Default()
+
+	r.Use(middleware.TraceMiddleware())
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "UP", "database": "Connected"})

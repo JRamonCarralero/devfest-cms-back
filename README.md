@@ -24,6 +24,7 @@ A robust and scalable backend service built with **Go** to manage technology com
 │   ├── domain/             # Core business logic & Interfaces (Entities)
 │   ├── infrastructure/
 │   │   ├── api/            # API Implementation
+│   │   │   ├── dtos/       # Data Transfer Objects
 │   │   │   ├── handlers/   # HTTP Handlers
 │   │   │   ├── middleware/ # HTTP Middleware
 │   │   │   ├── response/   # HTTP Response
