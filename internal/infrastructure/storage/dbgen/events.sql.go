@@ -41,7 +41,7 @@ type CreateEventParams struct {
 	Name      string      `json:"name"`
 	Slug      string      `json:"slug"`
 	IsActive  pgtype.Bool `json:"is_active"`
-	CreatedBy pgtype.UUID `json:"created_by"`
+	CreatedBy uuid.UUID   `json:"created_by"`
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
@@ -256,7 +256,7 @@ type UpdateEventParams struct {
 	Name      string      `json:"name"`
 	Slug      string      `json:"slug"`
 	IsActive  pgtype.Bool `json:"is_active"`
-	UpdatedBy pgtype.UUID `json:"updated_by"`
+	UpdatedBy uuid.UUID   `json:"updated_by"`
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {

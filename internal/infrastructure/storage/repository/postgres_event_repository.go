@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"devfest/internal/domain"
 	"devfest/internal/infrastructure/storage/dbgen"
+
+	"github.com/google/uuid"
 )
 
 type PostgresEventRepository struct {
@@ -14,6 +16,37 @@ type PostgresEventRepository struct {
 // NewPostgresEventRepository returns a new PostgresEventRepository
 func NewPostgresEventRepository(queries *dbgen.Queries) *PostgresEventRepository {
 	return &PostgresEventRepository{queries: queries}
+}
+
+// --- READERS ---
+
+// GetAll returns all Events
+func (r *PostgresEventRepository) GetAll(ctx context.Context) ([]domain.Event, error) {
+	rows, err := r.queries.ListEvents(ctx)
+	if err != nil {
+		return nil, ParseDBError(err, "Event")
+	}
+
+	events := make([]domain.Event, len(rows))
+	for i, row := range rows {
+		events[i] = *mapToDomain(row)
+	}
+
+	return events, nil
+}
+
+// GetById returns an Event by its ID
+func (r *PostgresEventRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
+	row, err := r.queries.GetEventByID(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, ParseDBError(err, "Event")
+	}
+
+	event := *mapToDomain(row)
+	return &event, nil
 }
 
 // GetBySlug returns an Event by its slug
@@ -26,8 +59,23 @@ func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*
 		return nil, ParseDBError(err, "Event")
 	}
 
-	event := mapToDomain(row)
+	event := *mapToDomain(row)
 	return &event, nil
+}
+
+// GetActive returns all active Events
+func (r *PostgresEventRepository) GetActive(ctx context.Context) ([]domain.Event, error) {
+	rows, err := r.queries.ListActiveEvents(ctx)
+	if err != nil {
+		return nil, ParseDBError(err, "Event")
+	}
+
+	events := make([]domain.Event, len(rows))
+	for i, row := range rows {
+		events[i] = *mapToDomain(row)
+	}
+
+	return events, nil
 }
 
 // ListPaged returns a page of Events
@@ -51,26 +99,44 @@ func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, 
 
 	events := make([]domain.Event, len(rows))
 	for i, row := range rows {
-		events[i] = mapToDomain(row)
+		events[i] = *mapToDomain(row)
 	}
 
 	return events, total, nil
 }
 
+// --- WRITERS ---
+
+// create inserts a new Event
+func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Event) (dbgen.Event, error) {
+	params := dbgen.CreateEventParams{
+		Name:      event.Name,
+		Slug:      event.Slug,
+		IsActive:  ToPgBool(event.IsActive),
+		CreatedBy: event.CreatedBy,
+	}
+
+	return r.queries.CreateEvent(ctx, params)
+}
+
+// ToDo Update and Delete
+
 // --- Mappers ---
 
 // mapToDomain maps a dbgen.Event to a domain.Event
-func mapToDomain(row dbgen.Event) domain.Event {
-	return domain.Event{
-		ID:       row.ID.String(),
-		Name:     row.Name,
-		Slug:     row.Slug,
-		IsActive: row.IsActive.Bool,
+func mapToDomain(dbEvent dbgen.Event) *domain.Event {
+	return &domain.Event{
+		ID:   dbEvent.ID, // Este ya es uuid.UUID (funciona)
+		Name: dbEvent.Name,
+		Slug: dbEvent.Slug,
+
+		IsActive: &dbEvent.IsActive.Bool,
+
 		Audit: domain.Audit{
-			CreatedAt: row.CreatedAt.Time,
-			UpdatedAt: row.UpdatedAt.Time,
-			CreatedBy: uuidPtrToString(row.CreatedBy),
-			UpdatedBy: uuidPtrToString(row.UpdatedBy),
+			CreatedAt: dbEvent.CreatedAt.Time,
+			UpdatedAt: dbEvent.UpdatedAt.Time,
+			CreatedBy: dbEvent.CreatedBy,
+			UpdatedBy: dbEvent.UpdatedBy,
 		},
 	}
 }

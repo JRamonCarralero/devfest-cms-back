@@ -36,3 +36,19 @@ func stringToNullUUID(s *string) pgtype.UUID {
 		Valid: true,
 	}
 }
+
+// ToPgBool converts a *bool to pgtype.Bool
+func ToPgBool(b *bool) pgtype.Bool {
+	if b == nil {
+		return pgtype.Bool{Valid: false}
+	}
+	return pgtype.Bool{Bool: *b, Valid: true}
+}
+
+// ToPgText converts a *string to pgtype.Text
+func ToPgText(s *string) pgtype.Text {
+	if s == nil {
+		return pgtype.Text{Valid: false}
+	}
+	return pgtype.Text{String: *s, Valid: true}
+}

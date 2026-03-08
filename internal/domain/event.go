@@ -1,12 +1,16 @@
 package domain
 
-import "context"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type Event struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Slug     string `json:"slug"`
-	IsActive bool   `json:"is_active"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Slug     string    `json:"slug"`
+	IsActive *bool     `json:"is_active"`
 	Audit
 }
 

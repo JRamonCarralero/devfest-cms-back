@@ -16,8 +16,8 @@ type Collaborator struct {
 	Area      pgtype.Text        `json:"area"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy pgtype.UUID        `json:"created_by"`
-	UpdatedBy pgtype.UUID        `json:"updated_by"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
 type Developer struct {
@@ -27,8 +27,8 @@ type Developer struct {
 	RoleDescription pgtype.Text        `json:"role_description"`
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy       pgtype.UUID        `json:"created_by"`
-	UpdatedBy       pgtype.UUID        `json:"updated_by"`
+	CreatedBy       uuid.UUID          `json:"created_by"`
+	UpdatedBy       uuid.UUID          `json:"updated_by"`
 }
 
 type Event struct {
@@ -38,8 +38,8 @@ type Event struct {
 	IsActive  pgtype.Bool        `json:"is_active"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy pgtype.UUID        `json:"created_by"`
-	UpdatedBy pgtype.UUID        `json:"updated_by"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
 type Person struct {
@@ -53,8 +53,8 @@ type Person struct {
 	WebsiteUrl  pgtype.Text        `json:"website_url"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy   pgtype.UUID        `json:"created_by"`
-	UpdatedBy   pgtype.UUID        `json:"updated_by"`
+	CreatedBy   uuid.UUID          `json:"created_by"`
+	UpdatedBy   uuid.UUID          `json:"updated_by"`
 }
 
 type Scheduler struct {
@@ -67,8 +67,8 @@ type Scheduler struct {
 	Room      pgtype.Text        `json:"room"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy pgtype.UUID        `json:"created_by"`
-	UpdatedBy pgtype.UUID        `json:"updated_by"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
 type Speaker struct {
@@ -79,8 +79,8 @@ type Speaker struct {
 	Company   pgtype.Text        `json:"company"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy pgtype.UUID        `json:"created_by"`
-	UpdatedBy pgtype.UUID        `json:"updated_by"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
 type Sponsor struct {
@@ -93,8 +93,8 @@ type Sponsor struct {
 	OrderPriority pgtype.Int4        `json:"order_priority"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy     pgtype.UUID        `json:"created_by"`
-	UpdatedBy     pgtype.UUID        `json:"updated_by"`
+	CreatedBy     uuid.UUID          `json:"created_by"`
+	UpdatedBy     uuid.UUID          `json:"updated_by"`
 }
 
 type Talk struct {
@@ -106,6 +106,6 @@ type Talk struct {
 	Tags        []string           `json:"tags"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy   pgtype.UUID        `json:"created_by"`
-	UpdatedBy   pgtype.UUID        `json:"updated_by"`
+	CreatedBy   uuid.UUID          `json:"created_by"`
+	UpdatedBy   uuid.UUID          `json:"updated_by"`
 }
