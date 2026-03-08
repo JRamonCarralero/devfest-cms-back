@@ -18,12 +18,16 @@ A robust and scalable backend service built with **Go** to manage technology com
 ├── internal/
 │   ├── domain/             # Core business logic & Interfaces (Entities)
 │   ├── infrastructure/
+│   │   ├── api/            # API Implementation
+│   │   │   ├── handlers/   # HTTP Handlers
+│   │   │   └── router.go   # API Router
 │   │   ├── storage/        # Database implementations & migrations
 │   │   │   ├── dbgen/      # SQLC GENERATED CODE (Do not edit manually)
 │   │   │   ├── queries/    # Pure SQL queries (.sql files)
 │   │   │   ├── migrations/ # Table definitions & DB triggers
 │   │   │   └── repository/ # Repository Pattern & Dependency Injection
 │   │   └── config/         # Environment variable management
+│   └── usecase/            # Business logic & Interactors
 └── sqlc.yaml               # SQLC configuration for Go code generation
 ```
 
