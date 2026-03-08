@@ -4,8 +4,8 @@ import (
 	"devfest/internal/domain"
 	"devfest/internal/infrastructure/api/dtos"
 	"devfest/internal/infrastructure/api/response"
+	"devfest/internal/infrastructure/api/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -77,8 +77,10 @@ func (h *EventHandler) GetPaged(c *gin.Context) {
 	search := c.DefaultQuery("search", "")
 	orderBy := c.DefaultQuery("order", "created_at_desc")
 
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+	page, pageSize := utils.GetPaginationParams(c)
+	if pageSize > 100 {
+		pageSize = 100
+	}
 
 	events, total, err := h.usecase.GetEventsPaged(c.Request.Context(), search, int32(page), int32(pageSize), orderBy)
 	if err != nil {
@@ -86,14 +88,16 @@ func (h *EventHandler) GetPaged(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": events,
-		"meta": gin.H{
-			"total":    total,
-			"page":     page,
-			"pageSize": pageSize,
+	res := dtos.PagedResponse[domain.Event]{
+		Data: events,
+		Meta: dtos.PagedMeta{
+			Total:    total,
+			Page:     int32(page),
+			PageSize: int32(pageSize),
 		},
-	})
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 // Create
@@ -105,6 +109,13 @@ func (h *EventHandler) Create(c *gin.Context) {
 		response.HandleError(c, newErr)
 		return
 	}
+
+	uid, err := utils.GetUserId(c)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+	dto.CreatedBy = uid
 
 	event, err := h.usecase.CreateEvent(c.Request.Context(), dto)
 	if err != nil {
@@ -131,6 +142,13 @@ func (h *EventHandler) Update(c *gin.Context) {
 		response.HandleError(c, newErr)
 		return
 	}
+
+	uid, err := utils.GetUserId(c)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+	dto.UpdatedBy = uid
 
 	event, err := h.usecase.UpdateEvent(c.Request.Context(), id, dto)
 	if err != nil {

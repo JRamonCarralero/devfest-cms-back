@@ -13,6 +13,7 @@ const (
 	TypeInternal        ErrorType = "INTERNAL"
 	TypeAlreadyExists   ErrorType = "ALREADY_EXISTS"
 	TypeUnauthenticated ErrorType = "UNAUTHENTICATED"
+	TypeUnauthorized    ErrorType = "UNAUTHORIZED"
 )
 
 type AppError struct {

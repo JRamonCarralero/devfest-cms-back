@@ -1,6 +1,7 @@
 package api
 
 import (
+	"devfest/internal/domain"
 	"devfest/internal/infrastructure/api/handlers"
 	"devfest/internal/infrastructure/api/middleware"
 	"devfest/internal/infrastructure/storage/dbgen"
@@ -34,9 +35,18 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	api := r.Group("/api/v1")
 	{
 		events := api.Group("/events")
+		protecteEvents := events.Group("/")
+		protecteEvents.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
 		{
-			events.GET("", eventHandler.GetEvents)       // Listar y buscar
-			events.GET("/:slug", eventHandler.GetBySlug) // Ver detalle
+			events.GET("", eventHandler.GetEvents)            // All events
+			events.GET("/:id", eventHandler.GetByID)          // Event by ID
+			events.GET("/slug/:slug", eventHandler.GetBySlug) // Event by slug
+			events.GET("/active", eventHandler.GetActive)     // All active events
+			events.GET("/page", eventHandler.GetPaged)        // All events paged
+
+			protecteEvents.POST("", eventHandler.Create)       // Create event
+			protecteEvents.PUT("/:id", eventHandler.Update)    // Update event
+			protecteEvents.DELETE("/:id", eventHandler.Delete) // Delete event
 		}
 	}
 
