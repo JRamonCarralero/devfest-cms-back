@@ -1,11 +1,11 @@
 package main
 
 import (
+	"devfest/internal/infrastructure/api"
 	db "devfest/internal/infrastructure/storage"
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -40,13 +40,7 @@ func main() {
 		log.Fatalf("❌ Error: %v", err)
 	}
 
-	// ToDo: implement routes and inject dependencies
-
-	r := gin.Default()
-
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "UP", "database": "Connected"})
-	})
+	r := api.SetupRouter(dbPool)
 
 	port := os.Getenv("PORT")
 	if port == "" {

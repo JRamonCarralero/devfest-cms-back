@@ -7,6 +7,7 @@ sql:
       go:
         package: "dbgen"                                          # generated package name
         out: "internal/infrastructure/storage/dbgen"              # output directory
+        sql_package: "pgx/v5"
         emit_json_tags: true
         emit_prepared_queries: false
         emit_interface: true                                      # Emit interfaces

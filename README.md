@@ -4,7 +4,7 @@ A robust and scalable backend service built with **Go** to manage technology com
 
 ## 🚀 Tech Stack
 
-- **Language:** Go 1.22+
+- **Language:** Go 1.25+
 - **Database:** PostgreSQL (via Supabase)
 - **SQL Generator:** [SQLC](https://sqlc.dev/) (Type-safe SQL)
 - **Driver:** [pgx/v5](https://github.com/jackc/pgx) (PostgreSQL Driver and Toolkit)
@@ -21,7 +21,8 @@ A robust and scalable backend service built with **Go** to manage technology com
 │   │   ├── storage/        # Database implementations & migrations
 │   │   │   ├── dbgen/      # SQLC GENERATED CODE (Do not edit manually)
 │   │   │   ├── queries/    # Pure SQL queries (.sql files)
-│   │   │   └── migrations/ # Table definitions & DB triggers
+│   │   │   ├── migrations/ # Table definitions & DB triggers
+│   │   │   └── repository/ # Repository Pattern & Dependency Injection
 │   │   └── config/         # Environment variable management
 └── sqlc.yaml               # SQLC configuration for Go code generation
 ```

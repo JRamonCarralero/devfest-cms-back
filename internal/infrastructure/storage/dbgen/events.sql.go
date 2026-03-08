@@ -7,9 +7,9 @@ package dbgen
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countEvents = `-- name: CountEvents :one
@@ -19,7 +19,7 @@ WHERE
 `
 
 func (q *Queries) CountEvents(ctx context.Context, dollar_1 string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countEvents, dollar_1)
+	row := q.db.QueryRow(ctx, countEvents, dollar_1)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -38,14 +38,14 @@ RETURNING id, name, slug, is_active, created_at, updated_at, created_by, updated
 `
 
 type CreateEventParams struct {
-	Name      string        `json:"name"`
-	Slug      string        `json:"slug"`
-	IsActive  sql.NullBool  `json:"is_active"`
-	CreatedBy uuid.NullUUID `json:"created_by"`
+	Name      string      `json:"name"`
+	Slug      string      `json:"slug"`
+	IsActive  pgtype.Bool `json:"is_active"`
+	CreatedBy pgtype.UUID `json:"created_by"`
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
-	row := q.db.QueryRowContext(ctx, createEvent,
+	row := q.db.QueryRow(ctx, createEvent,
 		arg.Name,
 		arg.Slug,
 		arg.IsActive,
@@ -71,7 +71,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteEvent(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteEvent, id)
+	_, err := q.db.Exec(ctx, deleteEvent, id)
 	return err
 }
 
@@ -83,7 +83,7 @@ WHERE id = $1 LIMIT 1
 
 // queries/events.sql
 func (q *Queries) GetEventByID(ctx context.Context, id uuid.UUID) (Event, error) {
-	row := q.db.QueryRowContext(ctx, getEventByID, id)
+	row := q.db.QueryRow(ctx, getEventByID, id)
 	var i Event
 	err := row.Scan(
 		&i.ID,
@@ -104,7 +104,7 @@ WHERE slug = $1 LIMIT 1
 `
 
 func (q *Queries) GetEventBySlug(ctx context.Context, slug string) (Event, error) {
-	row := q.db.QueryRowContext(ctx, getEventBySlug, slug)
+	row := q.db.QueryRow(ctx, getEventBySlug, slug)
 	var i Event
 	err := row.Scan(
 		&i.ID,
@@ -126,7 +126,7 @@ ORDER BY created_at DESC
 `
 
 func (q *Queries) ListActiveEvents(ctx context.Context) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, listActiveEvents)
+	rows, err := q.db.Query(ctx, listActiveEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -147,9 +147,6 @@ func (q *Queries) ListActiveEvents(ctx context.Context) ([]Event, error) {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -163,7 +160,7 @@ ORDER BY created_at DESC
 `
 
 func (q *Queries) ListEvents(ctx context.Context) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, listEvents)
+	rows, err := q.db.Query(ctx, listEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -184,9 +181,6 @@ func (q *Queries) ListEvents(ctx context.Context) ([]Event, error) {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -214,7 +208,7 @@ type ListEventsPagedParams struct {
 }
 
 func (q *Queries) ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, listEventsPaged,
+	rows, err := q.db.Query(ctx, listEventsPaged,
 		arg.Column1,
 		arg.Limit,
 		arg.Offset,
@@ -241,9 +235,6 @@ func (q *Queries) ListEventsPaged(ctx context.Context, arg ListEventsPagedParams
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -261,15 +252,15 @@ RETURNING id, name, slug, is_active, created_at, updated_at, created_by, updated
 `
 
 type UpdateEventParams struct {
-	ID        uuid.UUID     `json:"id"`
-	Name      string        `json:"name"`
-	Slug      string        `json:"slug"`
-	IsActive  sql.NullBool  `json:"is_active"`
-	UpdatedBy uuid.NullUUID `json:"updated_by"`
+	ID        uuid.UUID   `json:"id"`
+	Name      string      `json:"name"`
+	Slug      string      `json:"slug"`
+	IsActive  pgtype.Bool `json:"is_active"`
+	UpdatedBy pgtype.UUID `json:"updated_by"`
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
-	row := q.db.QueryRowContext(ctx, updateEvent,
+	row := q.db.QueryRow(ctx, updateEvent,
 		arg.ID,
 		arg.Name,
 		arg.Slug,

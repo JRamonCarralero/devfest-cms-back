@@ -5,109 +5,107 @@
 package dbgen
 
 import (
-	"database/sql"
-	"time"
-
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Collaborator struct {
-	ID        uuid.UUID      `json:"id"`
-	PersonID  uuid.UUID      `json:"person_id"`
-	EventID   uuid.UUID      `json:"event_id"`
-	Area      sql.NullString `json:"area"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
-	CreatedBy uuid.NullUUID  `json:"created_by"`
-	UpdatedBy uuid.NullUUID  `json:"updated_by"`
+	ID        uuid.UUID          `json:"id"`
+	PersonID  uuid.UUID          `json:"person_id"`
+	EventID   uuid.UUID          `json:"event_id"`
+	Area      pgtype.Text        `json:"area"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy pgtype.UUID        `json:"created_by"`
+	UpdatedBy pgtype.UUID        `json:"updated_by"`
 }
 
 type Developer struct {
-	ID              uuid.UUID      `json:"id"`
-	PersonID        uuid.UUID      `json:"person_id"`
-	EventID         uuid.UUID      `json:"event_id"`
-	RoleDescription sql.NullString `json:"role_description"`
-	CreatedAt       sql.NullTime   `json:"created_at"`
-	UpdatedAt       sql.NullTime   `json:"updated_at"`
-	CreatedBy       uuid.NullUUID  `json:"created_by"`
-	UpdatedBy       uuid.NullUUID  `json:"updated_by"`
+	ID              uuid.UUID          `json:"id"`
+	PersonID        uuid.UUID          `json:"person_id"`
+	EventID         uuid.UUID          `json:"event_id"`
+	RoleDescription pgtype.Text        `json:"role_description"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy       pgtype.UUID        `json:"created_by"`
+	UpdatedBy       pgtype.UUID        `json:"updated_by"`
 }
 
 type Event struct {
-	ID        uuid.UUID     `json:"id"`
-	Name      string        `json:"name"`
-	Slug      string        `json:"slug"`
-	IsActive  sql.NullBool  `json:"is_active"`
-	CreatedAt sql.NullTime  `json:"created_at"`
-	UpdatedAt sql.NullTime  `json:"updated_at"`
-	CreatedBy uuid.NullUUID `json:"created_by"`
-	UpdatedBy uuid.NullUUID `json:"updated_by"`
+	ID        uuid.UUID          `json:"id"`
+	Name      string             `json:"name"`
+	Slug      string             `json:"slug"`
+	IsActive  pgtype.Bool        `json:"is_active"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy pgtype.UUID        `json:"created_by"`
+	UpdatedBy pgtype.UUID        `json:"updated_by"`
 }
 
 type Person struct {
-	ID          uuid.UUID      `json:"id"`
-	FullName    string         `json:"full_name"`
-	Email       sql.NullString `json:"email"`
-	AvatarUrl   sql.NullString `json:"avatar_url"`
-	GithubUser  sql.NullString `json:"github_user"`
-	LinkedinUrl sql.NullString `json:"linkedin_url"`
-	TwitterUrl  sql.NullString `json:"twitter_url"`
-	WebsiteUrl  sql.NullString `json:"website_url"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
-	CreatedBy   uuid.NullUUID  `json:"created_by"`
-	UpdatedBy   uuid.NullUUID  `json:"updated_by"`
+	ID          uuid.UUID          `json:"id"`
+	FullName    string             `json:"full_name"`
+	Email       pgtype.Text        `json:"email"`
+	AvatarUrl   pgtype.Text        `json:"avatar_url"`
+	GithubUser  pgtype.Text        `json:"github_user"`
+	LinkedinUrl pgtype.Text        `json:"linkedin_url"`
+	TwitterUrl  pgtype.Text        `json:"twitter_url"`
+	WebsiteUrl  pgtype.Text        `json:"website_url"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy   pgtype.UUID        `json:"created_by"`
+	UpdatedBy   pgtype.UUID        `json:"updated_by"`
 }
 
 type Scheduler struct {
-	ID        uuid.UUID      `json:"id"`
-	EventID   uuid.UUID      `json:"event_id"`
-	TalkID    uuid.NullUUID  `json:"talk_id"`
-	StartTime time.Time      `json:"start_time"`
-	EndTime   sql.NullTime   `json:"end_time"`
-	Duration  string         `json:"duration"`
-	Room      sql.NullString `json:"room"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
-	CreatedBy uuid.NullUUID  `json:"created_by"`
-	UpdatedBy uuid.NullUUID  `json:"updated_by"`
+	ID        uuid.UUID          `json:"id"`
+	EventID   uuid.UUID          `json:"event_id"`
+	TalkID    pgtype.UUID        `json:"talk_id"`
+	StartTime pgtype.Timestamptz `json:"start_time"`
+	EndTime   pgtype.Timestamptz `json:"end_time"`
+	Duration  string             `json:"duration"`
+	Room      pgtype.Text        `json:"room"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy pgtype.UUID        `json:"created_by"`
+	UpdatedBy pgtype.UUID        `json:"updated_by"`
 }
 
 type Speaker struct {
-	ID        uuid.UUID      `json:"id"`
-	PersonID  uuid.UUID      `json:"person_id"`
-	EventID   uuid.UUID      `json:"event_id"`
-	Bio       sql.NullString `json:"bio"`
-	Company   sql.NullString `json:"company"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
-	CreatedBy uuid.NullUUID  `json:"created_by"`
-	UpdatedBy uuid.NullUUID  `json:"updated_by"`
+	ID        uuid.UUID          `json:"id"`
+	PersonID  uuid.UUID          `json:"person_id"`
+	EventID   uuid.UUID          `json:"event_id"`
+	Bio       pgtype.Text        `json:"bio"`
+	Company   pgtype.Text        `json:"company"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy pgtype.UUID        `json:"created_by"`
+	UpdatedBy pgtype.UUID        `json:"updated_by"`
 }
 
 type Sponsor struct {
-	ID            uuid.UUID      `json:"id"`
-	EventID       uuid.UUID      `json:"event_id"`
-	Name          string         `json:"name"`
-	LogoUrl       sql.NullString `json:"logo_url"`
-	WebsiteUrl    sql.NullString `json:"website_url"`
-	Tier          sql.NullString `json:"tier"`
-	OrderPriority sql.NullInt32  `json:"order_priority"`
-	CreatedAt     sql.NullTime   `json:"created_at"`
-	UpdatedAt     sql.NullTime   `json:"updated_at"`
-	CreatedBy     uuid.NullUUID  `json:"created_by"`
-	UpdatedBy     uuid.NullUUID  `json:"updated_by"`
+	ID            uuid.UUID          `json:"id"`
+	EventID       uuid.UUID          `json:"event_id"`
+	Name          string             `json:"name"`
+	LogoUrl       pgtype.Text        `json:"logo_url"`
+	WebsiteUrl    pgtype.Text        `json:"website_url"`
+	Tier          pgtype.Text        `json:"tier"`
+	OrderPriority pgtype.Int4        `json:"order_priority"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy     pgtype.UUID        `json:"created_by"`
+	UpdatedBy     pgtype.UUID        `json:"updated_by"`
 }
 
 type Talk struct {
-	ID          uuid.UUID      `json:"id"`
-	EventID     uuid.UUID      `json:"event_id"`
-	SpeakerID   uuid.UUID      `json:"speaker_id"`
-	Title       string         `json:"title"`
-	Description sql.NullString `json:"description"`
-	Tags        []string       `json:"tags"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
-	CreatedBy   uuid.NullUUID  `json:"created_by"`
-	UpdatedBy   uuid.NullUUID  `json:"updated_by"`
+	ID          uuid.UUID          `json:"id"`
+	EventID     uuid.UUID          `json:"event_id"`
+	SpeakerID   uuid.UUID          `json:"speaker_id"`
+	Title       string             `json:"title"`
+	Description pgtype.Text        `json:"description"`
+	Tags        []string           `json:"tags"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy   pgtype.UUID        `json:"created_by"`
+	UpdatedBy   pgtype.UUID        `json:"updated_by"`
 }
