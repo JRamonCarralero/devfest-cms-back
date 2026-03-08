@@ -21,15 +21,14 @@ type EventUsecase interface {
 }
 
 type EventRepository interface {
-	// Read
-	// GetByID(ctx context.Context, id string) (*Event, error)
+	// Readers
+	GetAll(ctx context.Context) ([]Event, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Event, error)
 	GetBySlug(ctx context.Context, slug string) (*Event, error)
-	// ListAll(ctx context.Context) ([]Event, error)
-	// ListActive(ctx context.Context) ([]Event, error)
-	ListPaged(ctx context.Context, search string, limit, offset int32, orderBy string) ([]Event, int64, error)
-
-	// Write
-	// Create(ctx context.Context, event *Event) (*Event, error)
-	// Update(ctx context.Context, event *Event) (*Event, error)
-	// Delete(ctx context.Context, id string) error
+	GetActiveList(ctx context.Context) ([]Event, error)
+	ListPaged(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]Event, int64, error)
+	// Writers
+	Create(ctx context.Context, event *Event) (*Event, error)
+	Update(ctx context.Context, event *Event) (*Event, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }

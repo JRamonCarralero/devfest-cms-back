@@ -64,7 +64,7 @@ func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*
 }
 
 // GetActive returns all active Events
-func (r *PostgresEventRepository) GetActive(ctx context.Context) ([]domain.Event, error) {
+func (r *PostgresEventRepository) GetActiveList(ctx context.Context) ([]domain.Event, error) {
 	rows, err := r.queries.ListActiveEvents(ctx)
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
@@ -108,7 +108,7 @@ func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, 
 // --- WRITERS ---
 
 // create inserts a new Event
-func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Event) (dbgen.Event, error) {
+func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Event) (*domain.Event, error) {
 	params := dbgen.CreateEventParams{
 		Name:      event.Name,
 		Slug:      event.Slug,
@@ -116,21 +116,51 @@ func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Even
 		CreatedBy: event.CreatedBy,
 	}
 
-	return r.queries.CreateEvent(ctx, params)
+	row, err := r.queries.CreateEvent(ctx, params)
+	if err != nil {
+		return nil, ParseDBError(err, "Event")
+	}
+	result := *mapToDomain(row)
+	return &result, nil
 }
 
-// ToDo Update and Delete
+func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Event) (*domain.Event, error) {
+	params := dbgen.UpdateEventParams{
+		ID:        event.ID,
+		Name:      event.Name,
+		Slug:      event.Slug,
+		IsActive:  ToPgBool(event.IsActive),
+		UpdatedBy: event.UpdatedBy,
+	}
+
+	row, err := r.queries.UpdateEvent(ctx, params)
+	if err != nil {
+		return nil, ParseDBError(err, "Event")
+	}
+	result := *mapToDomain(row)
+	return &result, nil
+}
+
+func (r *PostgresEventRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	err := r.queries.DeleteEvent(ctx, id)
+	if err != nil {
+		return ParseDBError(err, "Event")
+	}
+
+	return nil
+}
 
 // --- Mappers ---
 
 // mapToDomain maps a dbgen.Event to a domain.Event
 func mapToDomain(dbEvent dbgen.Event) *domain.Event {
+	isActive := dbEvent.IsActive.Bool
 	return &domain.Event{
 		ID:   dbEvent.ID, // Este ya es uuid.UUID (funciona)
 		Name: dbEvent.Name,
 		Slug: dbEvent.Slug,
 
-		IsActive: &dbEvent.IsActive.Bool,
+		IsActive: &isActive,
 
 		Audit: domain.Audit{
 			CreatedAt: dbEvent.CreatedAt.Time,
