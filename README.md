@@ -20,6 +20,8 @@ A robust and scalable backend service built with **Go** to manage technology com
 │   ├── infrastructure/
 │   │   ├── api/            # API Implementation
 │   │   │   ├── handlers/   # HTTP Handlers
+│   │   │   ├── middleware/ # HTTP Middleware
+│   │   │   ├── response/   # HTTP Response
 │   │   │   └── router.go   # API Router
 │   │   ├── storage/        # Database implementations & migrations
 │   │   │   ├── dbgen/      # SQLC GENERATED CODE (Do not edit manually)
@@ -41,7 +43,7 @@ A robust and scalable backend service built with **Go** to manage technology com
 
 A running Supabase or PostgreSQL instance.
 
-###  1. Environment Configuration
+### 1. Environment Configuration
 
 Create a .env file in the root directory and provide your database credentials:
 
@@ -81,6 +83,16 @@ make dev
 - **Clean Separation**: The business logic (Domain) is completely decoupled from the database implementation (Infrastructure).
 
 - **Pagination**: Built-in support for paginated results and total count metadata for frontend integration (e.g., Astro).
+
+## 🔍 Error Handling & Traceability
+
+The API uses a centralized error management system:
+
+- Unified Error Format: All errors return a consistent JSON including message, type, and trace_id.
+
+- Traceability: Every request is assigned a unique UUID via TraceMiddleware. This ID is returned in the response headers (X-Trace-ID) and included in the error body.
+
+- Server Logs: Error logs include the exact file and line number (Location) where the error was triggered, making debugging effortless.
 
 ## 🤝 Contribution
 
