@@ -23,6 +23,8 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 
 	queries := dbgen.New(dbPool)
 
+	api := r.Group("/api/v1")
+
 	// --- Dependencies Injection ---
 
 	// Events
@@ -32,7 +34,6 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 
 	// ---ROUTES ---
 
-	api := r.Group("/api/v1")
 	{
 		events := api.Group("/events")
 		protecteEvents := events.Group("/")
