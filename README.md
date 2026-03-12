@@ -14,10 +14,15 @@ A robust and scalable backend service built with **Go** to manage technology com
 - **SQL Generator:** [SQLC](https://sqlc.dev/) (Type-safe SQL)
 - **Driver:** [pgx/v5](https://github.com/jackc/pgx) (PostgreSQL Driver and Toolkit)
 - **Architecture:** Clean Architecture (Entities, Repository Pattern, Dependency Injection)
+- **Testing:** [Testcontainers for Go](https://testcontainers.com/) (Ephemeral Docker databases)
+- **CI/CD:** GitHub Actions (Automated testing pipeline)
+- **Assertions:** [Testify](https://github.com/stretchr/testify)
 
 ## 📁 Project Structure
 
 ```text
+├── .github/
+│   └── workflows/          # GitHub Actions workflows
 ├── cmd/
 │   └── server/             # Application entry point (main.go)
 ├── internal/
@@ -44,8 +49,8 @@ A robust and scalable backend service built with **Go** to manage technology com
 
 ### Prerequisites
 
-- Go SDK installed.
-
+- Go SDK 1.25+ installed.
+- **Docker Desktop** (Required for integration tests)
 - SQLC binary (Download sqlc.exe for Windows or install via brew/scoop).
 
 A running Supabase or PostgreSQL instance.
@@ -100,6 +105,25 @@ The API uses a centralized error management system:
 - Traceability: Every request is assigned a unique UUID via TraceMiddleware. This ID is returned in the response headers (X-Trace-ID) and included in the error body.
 
 - Server Logs: Error logs include the exact file and line number (Location) where the error was triggered, making debugging effortless.
+
+## 🧪 Testing Strategy
+
+The project implements a multi-layered testing strategy to ensure reliability:
+
+- **Unit Tests:** Located alongside handlers and middleware. We use mocks and `httptest` to validate logic without side effects.
+- **Integration Tests:** Located in `internal/infrastructure/storage/repository/`. These tests use **Testcontainers** to spin up a real PostgreSQL instance in Docker, ensuring that SQL queries and migrations work as expected.
+- **Continuous Integration:** Every Pull Request to `main` or `develop` triggers a GitHub Action that runs the entire test suite in a clean environment.
+
+### Running Tests Locally
+
+Ensure you have **Docker** running, then execute:
+
+```bash
+# Run all tests
+go test -v ./...
+
+# Run only repository integration tests
+go test -v ./internal/infrastructure/storage/repository/...
 
 ## 🤝 Contribution
 
