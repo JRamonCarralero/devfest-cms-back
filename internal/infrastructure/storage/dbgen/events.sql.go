@@ -30,9 +30,10 @@ INSERT INTO events (
     name, 
     slug, 
     is_active, 
-    created_by
+    created_by, 
+    updated_by
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $4
 )
 RETURNING id, name, slug, is_active, created_at, updated_at, created_by, updated_by
 `
