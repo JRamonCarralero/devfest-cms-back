@@ -6,12 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+name: Go Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      # No need to declare Postgres here; Testcontainers will boot it up for us within the VM.
 
     steps:
       - name: Checkout code
@@ -20,7 +25,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.1'
+          go-version: '1.22'
           cache: true
 
       - name: Install dependencies
