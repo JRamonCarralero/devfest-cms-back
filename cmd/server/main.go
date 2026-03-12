@@ -1,27 +1,23 @@
 package main
 
 import (
+	"devfest/internal/infrastructure/api"
+	"devfest/internal/infrastructure/config"
 	db "devfest/internal/infrastructure/storage"
 	"log"
-	"os"
-
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// Load Environment Variables
+	cfg := config.LoadConfig()
 
 	// Database Connection
-
 	dsn := db.BuildDSN(
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+		cfg.DBUser,
+		cfg.DBPassword,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBName,
 	)
 
 	dbPool, err := db.NewPostgresClient(dsn)
@@ -40,19 +36,8 @@ func main() {
 		log.Fatalf("❌ Error: %v", err)
 	}
 
-	// ToDo: implement routes and inject dependencies
+	r := api.SetupRouter(dbPool)
 
-	r := gin.Default()
-
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "UP", "database": "Connected"})
-	})
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	log.Printf("🚀 Server running on port: %s", port)
-	r.Run(":" + port)
+	log.Printf("🚀 Server running on port: %s", cfg.Port)
+	r.Run(":" + cfg.Port)
 }

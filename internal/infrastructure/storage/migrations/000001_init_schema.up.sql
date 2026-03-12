@@ -7,10 +7,10 @@ CREATE TABLE IF NOT EXISTS events (
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 2. Persons Table 
@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS persons (
     linkedin_url TEXT,
     twitter_url TEXT,
     website_url TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 3. ROLES (Speakers, Developers, Collaborators)
@@ -37,10 +37,10 @@ CREATE TABLE IF NOT EXISTS speakers (
     bio TEXT,
     company TEXT,
     UNIQUE(person_id, event_id),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS developers (
@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS developers (
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     role_description TEXT,
     UNIQUE(person_id, event_id),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS collaborators (
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS collaborators (
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     area TEXT,
     UNIQUE(person_id, event_id),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 4. Sponsors Table
@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS sponsors (
     website_url TEXT,
     tier TEXT DEFAULT 'bronce',
     order_priority INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 5. Talks Table
@@ -90,10 +90,10 @@ CREATE TABLE IF NOT EXISTS talks (
     title TEXT NOT NULL,
     description TEXT,
     tags TEXT[],
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 6. Scheduler Table
@@ -105,10 +105,10 @@ CREATE TABLE IF NOT EXISTS scheduler (
     end_time TIMESTAMP WITH TIME ZONE,
     duration TEXT NOT NULL,
     room TEXT DEFAULT 'Main Hall',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_by UUID,
-    updated_by UUID
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 ------------- TRIGGERS! -------------

@@ -2,14 +2,6 @@ package domain
 
 import "time"
 
-type Event struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Slug     string `json:"slug"`
-	IsActive bool   `json:"is_active"`
-	Audit
-}
-
 type Person struct {
 	ID          string  `json:"id"`
 	FullName    string  `json:"full_name"`

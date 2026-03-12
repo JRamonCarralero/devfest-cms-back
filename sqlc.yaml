@@ -1,0 +1,25 @@
+version: "2"
+sql:
+  - schema: "internal/infrastructure/storage/migrations/"         # Schema file folder
+    queries: "internal/infrastructure/storage/queries/"           # Queries folder
+    engine: "postgresql"
+    gen:
+      go:
+        package: "dbgen"                                          # generated package name
+        out: "internal/infrastructure/storage/dbgen"              # output directory
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_prepared_queries: false
+        emit_interface: true                                      # Emit interfaces
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+          
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+            
+          - db_type: "timestamp"
+            go_type: "time.Time"
+
+          - db_type: "bool"
+            go_type: "bool"
