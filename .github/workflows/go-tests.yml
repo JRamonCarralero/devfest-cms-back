@@ -2,9 +2,23 @@ name: Go Tests
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
+    paths:
+      - '**.go'               
+      - 'go.mod'              
+      - 'go.sum'
+      - 'internal/infrastructure/storage/migrations/**'
+      - 'sqlc.yaml'            
+      - '.github/workflows/**'
+
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'internal/infrastructure/storage/migrations/**'
+      - '.github/workflows/**'
 
 jobs:
   test:
