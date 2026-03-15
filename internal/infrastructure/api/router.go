@@ -10,6 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
@@ -20,6 +22,12 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "UP", "database": "Connected"})
 	})
+
+	r.StaticFile("/docs/swagger.yaml", "./api-docs/swagger.yaml")
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL("/docs/swagger.yaml"),
+	))
 
 	queries := dbgen.New(dbPool)
 
@@ -39,11 +47,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protecteEvents := events.Group("/")
 		protecteEvents.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
 		{
-			events.GET("", eventHandler.GetEvents)            // All events
-			events.GET("/:id", eventHandler.GetByID)          // Event by ID
-			events.GET("/slug/:slug", eventHandler.GetBySlug) // Event by slug
-			events.GET("/active", eventHandler.GetActive)     // All active events
-			events.GET("/page", eventHandler.GetPaged)        // All events paged
+			events.GET("", eventHandler.GetEvents)               // All events
+			events.GET("/id/:id", eventHandler.GetByID)          // Event by ID
+			events.GET("/slug/:slug", eventHandler.GetBySlug)    // Event by slug
+			events.GET("/status/active", eventHandler.GetActive) // All active events
+			events.GET("/paged", eventHandler.GetPaged)          // All events paged
 
 			protecteEvents.POST("", eventHandler.Create)       // Create event
 			protecteEvents.PUT("/:id", eventHandler.Update)    // Update event
