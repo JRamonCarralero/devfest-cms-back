@@ -131,7 +131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AppError
+                $ref: '#/components/schemas/AppError'
     post:
       summary: Create an event
       description: Create an event
@@ -395,14 +395,14 @@ paths:
       description: Get all events with pagination
       tags:
         - Events
-      params:
+      parameters:
         - name: search
           description: Search by name
           in: query
           required: false
           schema:
             type: string
-        - name: order:
+        - name: order
           description: Order by
           in: query
           required: false
@@ -426,7 +426,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventPaged'
+                $ref: '#/components/schemas/EventPagedResponse'
         '500':
           description: Internal Server Error
           content:

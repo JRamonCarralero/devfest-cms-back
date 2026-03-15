@@ -10,6 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
@@ -20,6 +22,12 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "UP", "database": "Connected"})
 	})
+
+	r.StaticFile("/docs/swagger.yaml", "./api-docs/swagger.yaml")
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL("/docs/swagger.yaml"),
+	))
 
 	queries := dbgen.New(dbPool)
 
