@@ -39,11 +39,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protecteEvents := events.Group("/")
 		protecteEvents.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
 		{
-			events.GET("", eventHandler.GetEvents)            // All events
-			events.GET("/:id", eventHandler.GetByID)          // Event by ID
-			events.GET("/slug/:slug", eventHandler.GetBySlug) // Event by slug
-			events.GET("/active", eventHandler.GetActive)     // All active events
-			events.GET("/page", eventHandler.GetPaged)        // All events paged
+			events.GET("", eventHandler.GetEvents)               // All events
+			events.GET("/id/:id", eventHandler.GetByID)          // Event by ID
+			events.GET("/slug/:slug", eventHandler.GetBySlug)    // Event by slug
+			events.GET("/status/active", eventHandler.GetActive) // All active events
+			events.GET("/paged", eventHandler.GetPaged)          // All events paged
 
 			protecteEvents.POST("", eventHandler.Create)       // Create event
 			protecteEvents.PUT("/:id", eventHandler.Update)    // Update event
