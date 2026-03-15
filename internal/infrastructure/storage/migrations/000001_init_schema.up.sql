@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS events (
 -- 2. Persons Table 
 CREATE TABLE IF NOT EXISTS persons (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    full_name TEXT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
     email TEXT UNIQUE,
     avatar_url TEXT,
     github_user TEXT,
