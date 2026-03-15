@@ -408,6 +408,8 @@ paths:
           required: false
           schema:
             type: string
+            description: Field to order by and direction (asc or desc)
+            example: name_asc
         - name: page
           description: Page number
           in: query
