@@ -44,7 +44,8 @@ type Event struct {
 
 type Person struct {
 	ID          uuid.UUID          `json:"id"`
-	FullName    string             `json:"full_name"`
+	FirstName   string             `json:"first_name"`
+	LastName    string             `json:"last_name"`
 	Email       pgtype.Text        `json:"email"`
 	AvatarUrl   pgtype.Text        `json:"avatar_url"`
 	GithubUser  pgtype.Text        `json:"github_user"`
