@@ -83,8 +83,8 @@ func (i *personInteractor) Create(ctx context.Context, dto dtos.CreatePersonDTO)
 }
 
 // Update validates params and updates a person
-func (i *personInteractor) Update(ctx context.Context, dto dtos.UpdatePersonDTO) (*domain.Person, error) {
-	person, err := i.GetByID(ctx, dto.ID)
+func (i *personInteractor) Update(ctx context.Context, id uuid.UUID, dto dtos.UpdatePersonDTO) (*domain.Person, error) {
+	person, err := i.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

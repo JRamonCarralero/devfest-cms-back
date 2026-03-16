@@ -40,6 +40,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	eventUsecase := usecase.NewEventInteractor(eventRepo)
 	eventHandler := handlers.NewEventHandler(eventUsecase)
 
+	// Persons
+	personRepo := repository.NewPostgresPersonRepository(queries)
+	personUsecase := usecase.NewPersonInteractor(personRepo)
+	personHandler := handlers.NewPersonHandler(personUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -57,6 +62,20 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 			protecteEvents.PUT("/:id", eventHandler.Update)    // Update event
 			protecteEvents.DELETE("/:id", eventHandler.Delete) // Delete event
 		}
+	}
+
+	persons := api.Group("/persons")
+	protectedPersons := persons.Group("/")
+	protectedPersons.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		persons.GET("", personHandler.GetAll)
+		persons.GET("/paged", personHandler.GetPaged)
+		persons.GET("/id/:id", personHandler.GetByID)
+		persons.GET("/email/:email", personHandler.GetByEmail)
+
+		protectedPersons.POST("", personHandler.Create)
+		protectedPersons.PUT("/:id", personHandler.Update)
+		protectedPersons.DELETE("/:id", personHandler.Delete)
 	}
 
 	return r

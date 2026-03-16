@@ -15,7 +15,6 @@ type CreatePersonDTO struct {
 }
 
 type UpdatePersonDTO struct {
-	ID          uuid.UUID `json:"-"`
 	FirstName   *string   `json:"first_name" binding:"omitempty,min=2"`
 	LastName    *string   `json:"last_name" binding:"omitempty,min=2"`
 	Email       *string   `json:"email" binding:"omitempty,email"`

@@ -28,7 +28,7 @@ type PersonUsecase interface {
 	ListPaged(ctx context.Context, search string, page, pageSize int32) ([]Person, int64, error)
 	// Writers
 	Create(ctx context.Context, dto dtos.CreatePersonDTO) (*Person, error)
-	Update(ctx context.Context, dto dtos.UpdatePersonDTO) (*Person, error)
+	Update(ctx context.Context, id uuid.UUID, dto dtos.UpdatePersonDTO) (*Person, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
