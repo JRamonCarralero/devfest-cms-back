@@ -121,7 +121,7 @@ func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Even
 		Name:      event.Name,
 		Slug:      event.Slug,
 		IsActive:  ToPgBool(event.IsActive),
-		UpdatedBy: event.UpdatedBy,
+		UpdatedBy: event.Audit.UpdatedBy,
 	}
 
 	row, err := r.queries.UpdateEvent(ctx, params)

@@ -55,7 +55,7 @@ func (r *PostgresPersonRepository) GetByEmail(ctx context.Context, email *string
 }
 
 // ListPaged returns a page of Persons
-func (r *PostgresPersonRepository) ListPaged(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]domain.Person, int64, error) {
+func (r *PostgresPersonRepository) ListPaged(ctx context.Context, search string, page, pageSize int32) ([]domain.Person, int64, error) {
 	offset := (page - 1) * pageSize
 
 	total, err := r.queries.CountPersons(ctx, search)

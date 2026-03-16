@@ -4,12 +4,9 @@ import (
 	"context"
 	"devfest/internal/domain"
 	"devfest/internal/infrastructure/api/dtos"
-	"errors"
 
 	"github.com/google/uuid"
 )
-
-// --- Readers ---
 
 // eventInteractor implements domain.EventUsecase
 type eventInteractor struct {
@@ -22,6 +19,8 @@ func NewEventInteractor(repo domain.EventRepository) domain.EventUsecase {
 		repo: repo,
 	}
 }
+
+// --- Readers ---
 
 // GetEvents returns all events
 func (i *eventInteractor) GetEvents(ctx context.Context) ([]domain.Event, error) {
@@ -36,7 +35,8 @@ func (i *eventInteractor) GetByID(ctx context.Context, id uuid.UUID) (*domain.Ev
 // GetEventBySlug validates slug and returns an Event by its slug
 func (i *eventInteractor) GetEventBySlug(ctx context.Context, slug string) (*domain.Event, error) {
 	if slug == "" {
-		return nil, errors.New("event slug is required")
+		appErr := domain.NewAppError(domain.TypeBadRequest, "event slug is required", nil)
+		return nil, appErr
 	}
 
 	event, err := i.repo.GetBySlug(ctx, slug)
@@ -45,7 +45,8 @@ func (i *eventInteractor) GetEventBySlug(ctx context.Context, slug string) (*dom
 	}
 
 	if event == nil {
-		return nil, errors.New("event not found")
+		appErr := domain.NewAppError(domain.TypeNotFound, "event not found", nil)
+		return nil, appErr
 	}
 
 	return event, nil
@@ -121,7 +122,7 @@ func (i *eventInteractor) UpdateEvent(ctx context.Context, id uuid.UUID, dto dto
 		event.IsActive = dto.IsActive
 	}
 
-	event.UpdatedBy = dto.UpdatedBy
+	event.Audit.UpdatedBy = dto.UpdatedBy
 
 	updatedEvent, err := i.repo.Update(ctx, event)
 	if err != nil {
