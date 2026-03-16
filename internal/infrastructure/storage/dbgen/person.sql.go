@@ -143,6 +143,45 @@ func (q *Queries) GetPersonByID(ctx context.Context, id uuid.UUID) (Person, erro
 	return i, err
 }
 
+const listPersons = `-- name: ListPersons :many
+SELECT id, first_name, last_name, email, avatar_url, github_user, linkedin_url, twitter_url, website_url, created_at, updated_at, created_by, updated_by FROM persons
+ORDER BY last_name ASC, first_name ASC
+`
+
+func (q *Queries) ListPersons(ctx context.Context) ([]Person, error) {
+	rows, err := q.db.Query(ctx, listPersons)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Person
+	for rows.Next() {
+		var i Person
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AvatarUrl,
+			&i.GithubUser,
+			&i.LinkedinUrl,
+			&i.TwitterUrl,
+			&i.WebsiteUrl,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CreatedBy,
+			&i.UpdatedBy,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPersonsPaged = `-- name: ListPersonsPaged :many
 SELECT id, first_name, last_name, email, avatar_url, github_user, linkedin_url, twitter_url, website_url, created_at, updated_at, created_by, updated_by FROM persons
 WHERE 

@@ -16,6 +16,10 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM persons
 WHERE email = $1 LIMIT 1;
 
+-- name: ListPersons :many
+SELECT * FROM persons
+ORDER BY last_name ASC, first_name ASC;
+
 -- name: ListPersonsPaged :many
 -- Usamos un listado con búsqueda básica por nombre/email y paginación
 SELECT * FROM persons

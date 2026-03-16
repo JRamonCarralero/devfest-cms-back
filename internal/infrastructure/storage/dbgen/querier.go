@@ -26,6 +26,7 @@ type Querier interface {
 	ListActiveEvents(ctx context.Context) ([]Event, error)
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
+	ListPersons(ctx context.Context) ([]Person, error)
 	// Usamos un listado con búsqueda básica por nombre/email y paginación
 	ListPersonsPaged(ctx context.Context, arg ListPersonsPagedParams) ([]Person, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
