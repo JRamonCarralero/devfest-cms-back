@@ -4,7 +4,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Gin](https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Developing-orange?style=for-the-badge)
-![Tests](https://github.com/JRamonCarralero/devfest-cms-back/actions/workflows/test.yml/badge.svg)
+![Tests](https://github.com/JRamonCarralero/devfest-cms-back/actions/workflows/go-test.yml/badge.svg)
 
 A robust and scalable backend service built with **Go** to manage technology community events. This project follows **Clean Architecture** principles and leverages **Supabase (PostgreSQL)** for reliable data persistence.
 
@@ -137,7 +137,12 @@ The project uses the **OpenAPI 3.0 (Swagger)** specification to document all end
 - **Swagger UI:** When the server is running, you can access the interactive documentation at:
   `http://localhost:8080/swagger/index.html`
 
-This UI allows you to explore available endpoints for **Events** and **Persons**, view required schemas, and test requests directly from the browser.
+### Available Modules
+
+| Module | Features |
+| :--- | :--- |
+| **Events** | CRUD, automatic auditing, and filtering. |
+| **Persons** | Profiles for speakers/organizers/developers, social links, and paged search. |
 
 ## 🤝 Contribution
 
