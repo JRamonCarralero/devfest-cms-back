@@ -97,19 +97,28 @@ CREATE TABLE IF NOT EXISTS talks (
     updated_by UUID NOT NULL
 );
 
--- 6. Scheduler Table
-CREATE TABLE IF NOT EXISTS scheduler (
+-- 6. Tracks Table
+CREATE TABLE IF NOT EXISTS tracks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    talk_id UUID REFERENCES talks(id) ON DELETE CASCADE,
-    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_time TIMESTAMP WITH TIME ZONE,
-    duration TEXT NOT NULL,
+    name TEXT NOT NULL,
+    event_date DATE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 7. Scheduler Table
+CREATE TABLE IF NOT EXISTS scheduler (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    track_id UUID NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,
+    talk_id UUID REFERENCES talks(id) ON DELETE SET NULL,
+    
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    
+    duration INTERVAL GENERATED ALWAYS AS (end_time - start_time) STORED,
+    
     room TEXT DEFAULT 'Main Hall',
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    created_by UUID NOT NULL,
-    updated_by UUID NOT NULL
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 ------------- TRIGGERS! -------------
@@ -163,6 +172,12 @@ BEGIN
     -- Talks
     IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talks') THEN
         CREATE TRIGGER trig_update_talks BEFORE UPDATE ON talks 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Tracks
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_tracks') THEN
+        CREATE TRIGGER trig_update_tracks BEFORE UPDATE ON tracks 
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
     END IF;
 

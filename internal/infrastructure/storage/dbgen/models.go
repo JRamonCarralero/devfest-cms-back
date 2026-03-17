@@ -60,16 +60,13 @@ type Person struct {
 
 type Scheduler struct {
 	ID        uuid.UUID          `json:"id"`
-	EventID   uuid.UUID          `json:"event_id"`
+	TrackID   uuid.UUID          `json:"track_id"`
 	TalkID    pgtype.UUID        `json:"talk_id"`
-	StartTime pgtype.Timestamptz `json:"start_time"`
-	EndTime   pgtype.Timestamptz `json:"end_time"`
-	Duration  string             `json:"duration"`
+	StartTime pgtype.Time        `json:"start_time"`
+	EndTime   pgtype.Time        `json:"end_time"`
+	Duration  pgtype.Interval    `json:"duration"`
 	Room      pgtype.Text        `json:"room"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	CreatedBy uuid.UUID          `json:"created_by"`
-	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
 type Speaker struct {
@@ -109,4 +106,12 @@ type Talk struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 	CreatedBy   uuid.UUID          `json:"created_by"`
 	UpdatedBy   uuid.UUID          `json:"updated_by"`
+}
+
+type Track struct {
+	ID        uuid.UUID          `json:"id"`
+	EventID   uuid.UUID          `json:"event_id"`
+	Name      string             `json:"name"`
+	EventDate pgtype.Date        `json:"event_date"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
