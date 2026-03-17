@@ -4,6 +4,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Gin](https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Developing-orange?style=for-the-badge)
+![Tests](https://github.com/JRamonCarralero/devfest-cms-back/actions/workflows/test.yml/badge.svg)
 
 A robust and scalable backend service built with **Go** to manage technology community events. This project follows **Clean Architecture** principles and leverages **Supabase (PostgreSQL)** for reliable data persistence.
 
@@ -23,6 +24,8 @@ A robust and scalable backend service built with **Go** to manage technology com
 ```text
 ├── .github/
 │   └── workflows/          # GitHub Actions workflows
+├── api-docs/               # Documentation
+│   └──swagger.yaml         # OpenAPI Specification
 ├── cmd/
 │   └── server/             # Application entry point (main.go)
 ├── internal/
@@ -90,11 +93,11 @@ make dev
 
 - **Type Safety**: SQLC ensures that all database operations are checked at compile time.
 
-- **Automated Auditing**: Primary tables include database-level triggers to manage updated_at timestamps automatically.
+- **Automated Auditing**: Includes automatic management of `updated_at` via DB triggers and `created_by`/`updated_by` tracking via Supabase Auth integration.
 
-- **Clean Separation**: The business logic (Domain) is completely decoupled from the database implementation (Infrastructure).
+- **Advanced Search & Pagination**: Endpoints for `Events` and `Persons` support server-side filtering (ILIKE search) and metadata-rich pagination.
 
-- **Pagination**: Built-in support for paginated results and total count metadata for frontend integration (e.g., Astro).
+- **Clean Separation**: Business logic (Domain) is decoupled from the database (Infrastructure) and the transport layer (API).
 
 ## 🔍 Error Handling & Traceability
 
@@ -124,6 +127,17 @@ go test -v ./...
 
 # Run only repository integration tests
 go test -v ./internal/infrastructure/storage/repository/...
+```
+
+## 📖 API Documentation
+
+The project uses the **OpenAPI 3.0 (Swagger)** specification to document all endpoints.
+
+- **Specification File:** Located at `api-docs/swagger.yaml`.
+- **Swagger UI:** When the server is running, you can access the interactive documentation at:
+  `http://localhost:8080/swagger/index.html`
+
+This UI allows you to explore available endpoints for **Events** and **Persons**, view required schemas, and test requests directly from the browser.
 
 ## 🤝 Contribution
 
