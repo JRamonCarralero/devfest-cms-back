@@ -36,7 +36,7 @@ SELECT
     p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
-WHERE s.event_id = $1  
+WHERE s.event_id = $1;
 
 -- name: ListSpeakersByEventPaged :many
 SELECT 

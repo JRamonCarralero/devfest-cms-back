@@ -1,4 +1,4 @@
--- name: CountSpeakersByEvent :one
+-- name: CountCollaboratorsByEvent :one
 SELECT COUNT(*) 
 FROM collaborators c
 JOIN persons p ON c.person_id = p.id

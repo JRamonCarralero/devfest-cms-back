@@ -12,25 +12,76 @@ import (
 )
 
 type Querier interface {
+	CountCollaboratorsByEvent(ctx context.Context, arg CountCollaboratorsByEventParams) (int64, error)
+	CountDevelopersByEvent(ctx context.Context, arg CountDevelopersByEventParams) (int64, error)
 	CountEvents(ctx context.Context, dollar_1 string) (int64, error)
 	CountPersons(ctx context.Context, search string) (int64, error)
+	CountSpeakersByEvent(ctx context.Context, arg CountSpeakersByEventParams) (int64, error)
+	CountSponsorsByEvent(ctx context.Context, arg CountSponsorsByEventParams) (int64, error)
+	CountTalksByEvent(ctx context.Context, arg CountTalksByEventParams) (int64, error)
+	CountTracksByEvent(ctx context.Context, arg CountTracksByEventParams) (int64, error)
+	CreateCollaborator(ctx context.Context, arg CreateCollaboratorParams) (Collaborator, error)
+	CreateDeveloper(ctx context.Context, arg CreateDeveloperParams) (Developer, error)
 	CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error)
 	CreatePerson(ctx context.Context, arg CreatePersonParams) (Person, error)
+	CreateScheduleEntry(ctx context.Context, arg CreateScheduleEntryParams) (Scheduler, error)
+	CreateSpeaker(ctx context.Context, arg CreateSpeakerParams) (Speaker, error)
+	CreateSponsor(ctx context.Context, arg CreateSponsorParams) (Sponsor, error)
+	CreateTalk(ctx context.Context, arg CreateTalkParams) (Talk, error)
+	CreateTrack(ctx context.Context, arg CreateTrackParams) (Track, error)
+	DeleteCollaborator(ctx context.Context, id uuid.UUID) error
+	DeleteDeveloper(ctx context.Context, id uuid.UUID) error
 	DeleteEvent(ctx context.Context, id uuid.UUID) error
 	DeletePerson(ctx context.Context, id uuid.UUID) error
+	DeleteScheduleEntry(ctx context.Context, id uuid.UUID) error
+	DeleteSpeaker(ctx context.Context, id uuid.UUID) error
+	DeleteSponsor(ctx context.Context, id uuid.UUID) error
+	DeleteTalk(ctx context.Context, id uuid.UUID) error
+	DeleteTrack(ctx context.Context, id uuid.UUID) error
+	GetCollaboratorByID(ctx context.Context, id uuid.UUID) (GetCollaboratorByIDRow, error)
+	GetCollaboratorByPersonAndEvent(ctx context.Context, arg GetCollaboratorByPersonAndEventParams) (uuid.UUID, error)
+	GetDeveloperByID(ctx context.Context, id uuid.UUID) (GetDeveloperByIDRow, error)
+	GetDeveloperByPersonAndEvent(ctx context.Context, arg GetDeveloperByPersonAndEventParams) (uuid.UUID, error)
 	// queries/events.sql
 	GetEventByID(ctx context.Context, id uuid.UUID) (Event, error)
 	GetEventBySlug(ctx context.Context, slug string) (Event, error)
 	GetPersonByEmail(ctx context.Context, email pgtype.Text) (Person, error)
 	GetPersonByID(ctx context.Context, id uuid.UUID) (Person, error)
+	GetScheduleEntryByID(ctx context.Context, id uuid.UUID) (GetScheduleEntryByIDRow, error)
+	GetSpeakerByID(ctx context.Context, id uuid.UUID) (GetSpeakerByIDRow, error)
+	GetSpeakerByPersonAndEvent(ctx context.Context, arg GetSpeakerByPersonAndEventParams) (uuid.UUID, error)
+	GetSponsorByID(ctx context.Context, id uuid.UUID) (Sponsor, error)
+	GetTalkByID(ctx context.Context, id uuid.UUID) (GetTalkByIDRow, error)
+	GetTrackByID(ctx context.Context, id uuid.UUID) (Track, error)
 	ListActiveEvents(ctx context.Context) ([]Event, error)
+	ListCollaboratorsByEvent(ctx context.Context, eventID uuid.UUID) ([]ListCollaboratorsByEventRow, error)
+	ListCollaboratorsByEventPaged(ctx context.Context, arg ListCollaboratorsByEventPagedParams) ([]ListCollaboratorsByEventPagedRow, error)
+	ListDevelopersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListDevelopersByEventRow, error)
+	ListDevelopersByEventPaged(ctx context.Context, arg ListDevelopersByEventPagedParams) ([]ListDevelopersByEventPagedRow, error)
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
+	ListFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]ListFullEventScheduleRow, error)
 	ListPersons(ctx context.Context) ([]Person, error)
 	// Usamos un listado con búsqueda básica por nombre/email y paginación
 	ListPersonsPaged(ctx context.Context, arg ListPersonsPagedParams) ([]Person, error)
+	ListScheduleByTrack(ctx context.Context, trackID uuid.UUID) ([]ListScheduleByTrackRow, error)
+	ListSpeakersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListSpeakersByEventRow, error)
+	ListSpeakersByEventPaged(ctx context.Context, arg ListSpeakersByEventPagedParams) ([]ListSpeakersByEventPagedRow, error)
+	ListSponsorsByEvent(ctx context.Context, eventID uuid.UUID) ([]Sponsor, error)
+	ListSponsorsByEventPaged(ctx context.Context, arg ListSponsorsByEventPagedParams) ([]Sponsor, error)
+	ListTalksByEvent(ctx context.Context, eventID uuid.UUID) ([]ListTalksByEventRow, error)
+	ListTalksByEventPaged(ctx context.Context, arg ListTalksByEventPagedParams) ([]ListTalksByEventPagedRow, error)
+	ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]Track, error)
+	ListTracksByEventPaged(ctx context.Context, arg ListTracksByEventPagedParams) ([]Track, error)
+	UpdateCollaborator(ctx context.Context, arg UpdateCollaboratorParams) (Collaborator, error)
+	UpdateDeveloper(ctx context.Context, arg UpdateDeveloperParams) (Developer, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
 	UpdatePerson(ctx context.Context, arg UpdatePersonParams) (Person, error)
+	UpdateScheduleEntry(ctx context.Context, arg UpdateScheduleEntryParams) (Scheduler, error)
+	UpdateSpeaker(ctx context.Context, arg UpdateSpeakerParams) (Speaker, error)
+	UpdateSponsor(ctx context.Context, arg UpdateSponsorParams) (Sponsor, error)
+	UpdateTalk(ctx context.Context, arg UpdateTalkParams) (Talk, error)
+	UpdateTrack(ctx context.Context, arg UpdateTrackParams) (Track, error)
 }
 
 var _ Querier = (*Queries)(nil)

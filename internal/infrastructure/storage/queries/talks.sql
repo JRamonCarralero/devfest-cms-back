@@ -42,7 +42,8 @@ FROM talks t
 JOIN speakers s ON t.speaker_id = s.id
 JOIN persons p ON s.person_id = p.id
 WHERE t.event_id = $1 
-AND t.title ILIKE '%' || COALESCE(sqlc.narg('search'), '') || '%' OR 
+AND (
+    t.title ILIKE '%' || COALESCE(sqlc.narg('search'), '') || '%' OR 
     p.first_name ILIKE '%' || COALESCE(sqlc.narg('search'), '') || '%' OR 
     p.last_name ILIKE '%' || COALESCE(sqlc.narg('search'), '') || '%'
 )
