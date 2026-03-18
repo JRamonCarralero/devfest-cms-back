@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEventInteractor(t *testing.T) {
@@ -92,7 +93,10 @@ func TestEventInteractor(t *testing.T) {
 			res, err := interactor.GetEventBySlug(ctx, "")
 
 			assert.Nil(t, res)
-			assert.EqualError(t, err, "event slug is required")
+			appErr, ok := err.(*domain.AppError)
+			require.True(t, ok, "error should be an AppError")
+			assert.Equal(t, domain.TypeBadRequest, appErr.Type)
+			assert.Equal(t, "event slug is required", appErr.Message)
 		})
 
 		t.Run("should return error if event not found", func(t *testing.T) {
@@ -103,7 +107,10 @@ func TestEventInteractor(t *testing.T) {
 			res, err := interactor.GetEventBySlug(ctx, "missing")
 
 			assert.Nil(t, res)
-			assert.EqualError(t, err, "event not found")
+			appErr, ok := err.(*domain.AppError)
+			require.True(t, ok, "error should be an AppError")
+			assert.Equal(t, domain.TypeNotFound, appErr.Type)
+			assert.Equal(t, "event not found", appErr.Message)
 		})
 	})
 
