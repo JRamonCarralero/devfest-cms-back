@@ -11,12 +11,12 @@ type Person struct {
 	ID          uuid.UUID `json:"id"`
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
-	Email       *string   `json:"email,omitempty"`
-	AvatarURL   *string   `json:"avatar_url,omitempty"`
-	GithubUser  *string   `json:"github_user,omitempty"`
-	LinkedinURL *string   `json:"linkedin_url,omitempty"`
-	TwitterURL  *string   `json:"twitter_url,omitempty"`
-	WebsiteURL  *string   `json:"website_url,omitempty"`
+	Email       *string   `json:"email"`
+	AvatarURL   *string   `json:"avatar_url"`
+	GithubUser  *string   `json:"github_user"`
+	LinkedinURL *string   `json:"linkedin_url"`
+	TwitterURL  *string   `json:"twitter_url"`
+	WebsiteURL  *string   `json:"website_url"`
 	Audit
 }
 
