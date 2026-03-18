@@ -6,7 +6,7 @@ import (
 )
 
 // uuidPtrToString converts pgtype.UUID to *string
-func uuidPtrToString(u pgtype.UUID) *string {
+func UuidPtrToString(u pgtype.UUID) *string {
 	if !u.Valid {
 		return nil
 	}
@@ -21,7 +21,7 @@ func uuidPtrToString(u pgtype.UUID) *string {
 }
 
 // stringToNullUUID converts *string to pgtype.UUID
-func stringToNullUUID(s *string) pgtype.UUID {
+func StringToNullUUID(s *string) pgtype.UUID {
 	if s == nil || *s == "" {
 		return pgtype.UUID{Valid: false}
 	}
@@ -45,8 +45,17 @@ func ToPgBool(b *bool) pgtype.Bool {
 	return pgtype.Bool{Bool: *b, Valid: true}
 }
 
-// ToPgText converts a *string to pgtype.Text
-func ToPgText(s *string) pgtype.Text {
+// TextToPtr converts pgtype.Text to *string
+func TextToPtr(t pgtype.Text) *string {
+	if !t.Valid {
+		return nil
+	}
+	s := t.String
+	return &s
+}
+
+// PtrToText converts a *string to pgtype.Text
+func PtrToText(s *string) pgtype.Text {
 	if s == nil {
 		return pgtype.Text{Valid: false}
 	}

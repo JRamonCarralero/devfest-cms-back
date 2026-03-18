@@ -8,19 +8,29 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CountEvents(ctx context.Context, dollar_1 string) (int64, error)
+	CountPersons(ctx context.Context, search string) (int64, error)
 	CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error)
+	CreatePerson(ctx context.Context, arg CreatePersonParams) (Person, error)
 	DeleteEvent(ctx context.Context, id uuid.UUID) error
+	DeletePerson(ctx context.Context, id uuid.UUID) error
 	// queries/events.sql
 	GetEventByID(ctx context.Context, id uuid.UUID) (Event, error)
 	GetEventBySlug(ctx context.Context, slug string) (Event, error)
+	GetPersonByEmail(ctx context.Context, email pgtype.Text) (Person, error)
+	GetPersonByID(ctx context.Context, id uuid.UUID) (Person, error)
 	ListActiveEvents(ctx context.Context) ([]Event, error)
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
+	ListPersons(ctx context.Context) ([]Person, error)
+	// Usamos un listado con búsqueda básica por nombre/email y paginación
+	ListPersonsPaged(ctx context.Context, arg ListPersonsPagedParams) ([]Person, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
+	UpdatePerson(ctx context.Context, arg UpdatePersonParams) (Person, error)
 }
 
 var _ Querier = (*Queries)(nil)

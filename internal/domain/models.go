@@ -2,18 +2,6 @@ package domain
 
 import "time"
 
-type Person struct {
-	ID          string  `json:"id"`
-	FullName    string  `json:"full_name"`
-	Email       *string `json:"email,omitempty"`
-	AvatarURL   *string `json:"avatar_url,omitempty"`
-	GithubUser  *string `json:"github_user,omitempty"`
-	LinkedinURL *string `json:"linkedin_url,omitempty"`
-	TwitterURL  *string `json:"twitter_url,omitempty"`
-	WebsiteURL  *string `json:"website_url,omitempty"`
-	Audit
-}
-
 type Speaker struct {
 	ID       string `json:"id"`
 	PersonID string `json:"person_id"`
