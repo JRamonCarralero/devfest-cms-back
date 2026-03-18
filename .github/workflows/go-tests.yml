@@ -2,7 +2,7 @@ name: Go Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
     paths:
       - '**.go'               
       - 'go.mod'              
@@ -12,7 +12,7 @@ on:
       - '.github/workflows/**'
 
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
     paths:
       - '**.go'
       - 'go.mod'
