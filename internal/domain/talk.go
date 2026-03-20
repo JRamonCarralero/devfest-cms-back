@@ -8,6 +8,6 @@ type Talk struct {
 	Title       string
 	Description string
 	Tags        *[]string
-	Speaker
+	Speakers    []Speaker
 	Audit
 }

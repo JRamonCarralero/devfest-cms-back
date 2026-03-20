@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS persons (
     updated_by UUID NOT NULL
 );
 
--- 3. ROLES (Speakers, Developers, Collaborators)
+-- 3. ROLES (Speakers, Developers, Collaborators, Organizers)
 CREATE TABLE IF NOT EXISTS speakers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
@@ -68,6 +68,19 @@ CREATE TABLE IF NOT EXISTS collaborators (
     updated_by UUID NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS organizers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    company TEXT,
+    role_description TEXT,
+    UNIQUE(person_id, event_id),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
+)
+
 -- 4. Sponsors Table
 CREATE TABLE IF NOT EXISTS sponsors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -87,7 +100,6 @@ CREATE TABLE IF NOT EXISTS sponsors (
 CREATE TABLE IF NOT EXISTS talks (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    speaker_id UUID NOT NULL REFERENCES speakers(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
     tags TEXT[],
@@ -95,6 +107,14 @@ CREATE TABLE IF NOT EXISTS talks (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     created_by UUID NOT NULL,
     updated_by UUID NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS talk_speakers (
+    talk_id UUID NOT NULL REFERENCES talks(id) ON DELETE CASCADE,
+    speaker_id UUID NOT NULL REFERENCES speakers(id) ON DELETE CASCADE,
+    PRIMARY KEY (talk_id, speaker_id)
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    created_by UUID NOT NULL
 );
 
 -- 6. Tracks Table
