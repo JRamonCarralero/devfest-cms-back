@@ -5,14 +5,14 @@ import (
 )
 
 type CreateCollaboratorDTO struct {
-	PersonID  uuid.UUID `json:"person_id" validate:"required"`
-	EventID   uuid.UUID `json:"event_id" validate:"required"`
-	Area      *string   `json:"area" validate:"required"`
+	PersonID  uuid.UUID `json:"person_id" binding:"required"`
+	EventID   uuid.UUID `json:"event_id" binding:"required"`
+	Area      *string   `json:"area" binding:"required"`
 	CreatedBy uuid.UUID `json:"-"`
 }
 
 type UpdateCollaboratorDTO struct {
-	Area      *string    `json:"area,omitempty"`
-	PersonID  *uuid.UUID `json:"person_id,omitempty"`
+	Area      *string    `json:"area" binding:"omitempty"`
+	PersonID  *uuid.UUID `json:"person_id" binding:"omitempty"`
 	UpdatedBy uuid.UUID  `json:"-"`
 }
