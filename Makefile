@@ -38,3 +38,7 @@ dev: generate
 # Build server
 build:
 	go build -o $(BINARY_NAME) $(MAIN_PATH)
+
+# Prepare environment
+prep: db-init generate
+	@echo "🚀 Database updates and Go code generated."
