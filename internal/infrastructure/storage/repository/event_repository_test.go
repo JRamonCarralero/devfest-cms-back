@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createTestEvent(t *testing.T, repo *PostgresEventRepository, name, slug string) *domain.Event {
+func createTestEvent(t *testing.T, repo *EventRepository, name, slug string) *domain.Event {
 	active := true
 	userID := uuid.New()
 	event := &domain.Event{
@@ -23,8 +23,8 @@ func createTestEvent(t *testing.T, repo *PostgresEventRepository, name, slug str
 	return created
 }
 
-func TestPostgresEventRepository_Create(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_Create(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 	ctx := context.Background()
 	createdBy := uuid.New()
 
@@ -59,8 +59,8 @@ func TestPostgresEventRepository_Create(t *testing.T) {
 	})
 }
 
-func TestPostgresEventRepository_GetByID(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_GetByID(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 	event := createTestEvent(t, repo, "Get By ID Test", "get-id-slug")
 
 	t.Run("Success", func(t *testing.T) {
@@ -76,8 +76,8 @@ func TestPostgresEventRepository_GetByID(t *testing.T) {
 	})
 }
 
-func TestPostgresEventRepository_ListPaged(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_ListPaged(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 
 	createTestEvent(t, repo, "Apple Event", "apple-slug")
 	createTestEvent(t, repo, "Banana Event", "banana-slug")
@@ -99,8 +99,8 @@ func TestPostgresEventRepository_ListPaged(t *testing.T) {
 	})
 }
 
-func TestPostgresEventRepository_Update(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_Update(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 	event := createTestEvent(t, repo, "Original Name", "update-slug")
 
 	t.Run("Successfully update fields", func(t *testing.T) {
@@ -115,8 +115,8 @@ func TestPostgresEventRepository_Update(t *testing.T) {
 	})
 }
 
-func TestPostgresEventRepository_Delete(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_Delete(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 	event := createTestEvent(t, repo, "Delete Me", "delete-slug")
 
 	t.Run("Successfully delete", func(t *testing.T) {
@@ -129,8 +129,8 @@ func TestPostgresEventRepository_Delete(t *testing.T) {
 	})
 }
 
-func TestPostgresEventRepository_FullLifecycle(t *testing.T) {
-	repo := NewPostgresEventRepository(testQueries)
+func TestEventRepository_FullLifecycle(t *testing.T) {
+	repo := NewEventRepository(testQueries)
 	ctx := context.Background()
 	userID := uuid.New()
 	active := true

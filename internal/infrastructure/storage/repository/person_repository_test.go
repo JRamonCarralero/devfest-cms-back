@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPostgresPersonRepository_Create(t *testing.T) {
+func TestPersonRepository_Create(t *testing.T) {
 	ctx := context.Background()
 
 	cleanTable(t, "persons")
 
-	repo := NewPostgresPersonRepository(testQueries)
+	repo := NewPersonRepository(testQueries)
 	createdBy := uuid.New()
 
 	t.Run("Should create a person with all fields", func(t *testing.T) {
@@ -50,9 +50,9 @@ func TestPostgresPersonRepository_Create(t *testing.T) {
 	})
 }
 
-func TestPostgresPersonRepository_Read(t *testing.T) {
+func TestPersonRepository_Read(t *testing.T) {
 	ctx := context.Background()
-	repo := NewPostgresPersonRepository(testQueries)
+	repo := NewPersonRepository(testQueries)
 	cleanTable(t, "persons")
 
 	email := "jane@devfest.com"
@@ -85,9 +85,9 @@ func TestPostgresPersonRepository_Read(t *testing.T) {
 	})
 }
 
-func TestPostgresPersonRepository_Update(t *testing.T) {
+func TestPersonRepository_Update(t *testing.T) {
 	ctx := context.Background()
-	repo := NewPostgresPersonRepository(testQueries)
+	repo := NewPersonRepository(testQueries)
 	cleanTable(t, "persons")
 
 	email := "original@test.com"
@@ -114,9 +114,9 @@ func TestPostgresPersonRepository_Update(t *testing.T) {
 	})
 }
 
-func TestPostgresPersonRepository_ListPaged(t *testing.T) {
+func TestPersonRepository_ListPaged(t *testing.T) {
 	ctx := context.Background()
-	repo := NewPostgresPersonRepository(testQueries)
+	repo := NewPersonRepository(testQueries)
 	cleanTable(t, "persons")
 
 	for i := 0; i < 5; i++ {
@@ -144,9 +144,9 @@ func TestPostgresPersonRepository_ListPaged(t *testing.T) {
 	})
 }
 
-func TestPostgresPersonRepository_Delete(t *testing.T) {
+func TestPersonRepository_Delete(t *testing.T) {
 	ctx := context.Background()
-	repo := NewPostgresPersonRepository(testQueries)
+	repo := NewPersonRepository(testQueries)
 	cleanTable(t, "persons")
 
 	person, _ := repo.Create(ctx, &domain.Person{

@@ -8,8 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// --- Readers ---
-
 // personInteractor implements domain.PersonUsecase
 type personInteractor struct {
 	repo domain.PersonRepository

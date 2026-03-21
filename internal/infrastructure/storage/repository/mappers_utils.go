@@ -61,3 +61,16 @@ func PtrToText(s *string) pgtype.Text {
 	}
 	return pgtype.Text{String: *s, Valid: true}
 }
+
+// PgStringToText converts pgtype.Text to string
+func PgStringToText(t pgtype.Text) string {
+	if !t.Valid {
+		return ""
+	}
+	return t.String
+}
+
+// TextToPgString converts string to pgtype.Text
+func TextToPgString(s string) pgtype.Text {
+	return pgtype.Text{String: s, Valid: true}
+}

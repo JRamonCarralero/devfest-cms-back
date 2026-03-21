@@ -94,7 +94,7 @@ func (q *Queries) DeleteSpeaker(ctx context.Context, id uuid.UUID) error {
 const getSpeakerByID = `-- name: GetSpeakerByID :one
 SELECT 
     s.id, s.person_id, s.event_id, s.bio, s.company, s.created_at, s.updated_at, s.created_by, s.updated_by, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.id = $1 LIMIT 1
@@ -117,6 +117,7 @@ type GetSpeakerByIDRow struct {
 	GithubUser  pgtype.Text        `json:"github_user"`
 	TwitterUrl  pgtype.Text        `json:"twitter_url"`
 	LinkedinUrl pgtype.Text        `json:"linkedin_url"`
+	WebsiteUrl  pgtype.Text        `json:"website_url"`
 }
 
 func (q *Queries) GetSpeakerByID(ctx context.Context, id uuid.UUID) (GetSpeakerByIDRow, error) {
@@ -139,6 +140,7 @@ func (q *Queries) GetSpeakerByID(ctx context.Context, id uuid.UUID) (GetSpeakerB
 		&i.GithubUser,
 		&i.TwitterUrl,
 		&i.LinkedinUrl,
+		&i.WebsiteUrl,
 	)
 	return i, err
 }
@@ -163,7 +165,7 @@ func (q *Queries) GetSpeakerByPersonAndEvent(ctx context.Context, arg GetSpeaker
 const listSpeakersByEvent = `-- name: ListSpeakersByEvent :many
 SELECT 
     s.id, s.person_id, s.event_id, s.bio, s.company, s.created_at, s.updated_at, s.created_by, s.updated_by, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.event_id = $1
@@ -186,6 +188,7 @@ type ListSpeakersByEventRow struct {
 	GithubUser  pgtype.Text        `json:"github_user"`
 	TwitterUrl  pgtype.Text        `json:"twitter_url"`
 	LinkedinUrl pgtype.Text        `json:"linkedin_url"`
+	WebsiteUrl  pgtype.Text        `json:"website_url"`
 }
 
 func (q *Queries) ListSpeakersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListSpeakersByEventRow, error) {
@@ -214,6 +217,7 @@ func (q *Queries) ListSpeakersByEvent(ctx context.Context, eventID uuid.UUID) ([
 			&i.GithubUser,
 			&i.TwitterUrl,
 			&i.LinkedinUrl,
+			&i.WebsiteUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -228,7 +232,7 @@ func (q *Queries) ListSpeakersByEvent(ctx context.Context, eventID uuid.UUID) ([
 const listSpeakersByEventPaged = `-- name: ListSpeakersByEventPaged :many
 SELECT 
     s.id, s.person_id, s.event_id, s.bio, s.company, s.created_at, s.updated_at, s.created_by, s.updated_by, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.event_id = $1 
@@ -265,6 +269,7 @@ type ListSpeakersByEventPagedRow struct {
 	GithubUser  pgtype.Text        `json:"github_user"`
 	TwitterUrl  pgtype.Text        `json:"twitter_url"`
 	LinkedinUrl pgtype.Text        `json:"linkedin_url"`
+	WebsiteUrl  pgtype.Text        `json:"website_url"`
 }
 
 func (q *Queries) ListSpeakersByEventPaged(ctx context.Context, arg ListSpeakersByEventPagedParams) ([]ListSpeakersByEventPagedRow, error) {
@@ -298,6 +303,7 @@ func (q *Queries) ListSpeakersByEventPaged(ctx context.Context, arg ListSpeakers
 			&i.GithubUser,
 			&i.TwitterUrl,
 			&i.LinkedinUrl,
+			&i.WebsiteUrl,
 		); err != nil {
 			return nil, err
 		}

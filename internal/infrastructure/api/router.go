@@ -36,12 +36,12 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	// --- Dependencies Injection ---
 
 	// Events
-	eventRepo := repository.NewPostgresEventRepository(queries)
+	eventRepo := repository.NewEventRepository(queries)
 	eventUsecase := usecase.NewEventInteractor(eventRepo)
 	eventHandler := handlers.NewEventHandler(eventUsecase)
 
 	// Persons
-	personRepo := repository.NewPostgresPersonRepository(queries)
+	personRepo := repository.NewPersonRepository(queries)
 	personUsecase := usecase.NewPersonInteractor(personRepo)
 	personHandler := handlers.NewPersonHandler(personUsecase)
 

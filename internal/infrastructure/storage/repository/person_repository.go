@@ -8,19 +8,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type PostgresPersonRepository struct {
+type PersonRepository struct {
 	queries *dbgen.Queries
 }
 
-// NewPostgresPersonRepository returns a new PostgresPersonRepository
-func NewPostgresPersonRepository(queries *dbgen.Queries) *PostgresPersonRepository {
-	return &PostgresPersonRepository{queries: queries}
+// NewPersonRepository returns a new PersonRepository
+func NewPersonRepository(queries *dbgen.Queries) *PersonRepository {
+	return &PersonRepository{queries: queries}
 }
 
 // --- READERS ---
 
 // GetAll returns all Persons
-func (r *PostgresPersonRepository) GetAll(ctx context.Context) ([]domain.Person, error) {
+func (r *PersonRepository) GetAll(ctx context.Context) ([]domain.Person, error) {
 	rows, err := r.queries.ListPersons(ctx)
 	if err != nil {
 		return nil, ParseDBError(err, "Person")
@@ -35,7 +35,7 @@ func (r *PostgresPersonRepository) GetAll(ctx context.Context) ([]domain.Person,
 }
 
 // GetById returns a Person by its ID
-func (r *PostgresPersonRepository) GetById(ctx context.Context, id uuid.UUID) (*domain.Person, error) {
+func (r *PersonRepository) GetById(ctx context.Context, id uuid.UUID) (*domain.Person, error) {
 	row, err := r.queries.GetPersonByID(ctx, id)
 	if err != nil {
 		return nil, ParseDBError(err, "Person")
@@ -45,7 +45,7 @@ func (r *PostgresPersonRepository) GetById(ctx context.Context, id uuid.UUID) (*
 }
 
 // GetByEmail returns a Person by its email
-func (r *PostgresPersonRepository) GetByEmail(ctx context.Context, email *string) (*domain.Person, error) {
+func (r *PersonRepository) GetByEmail(ctx context.Context, email *string) (*domain.Person, error) {
 	row, err := r.queries.GetPersonByEmail(ctx, PtrToText(email))
 	if err != nil {
 		return nil, ParseDBError(err, "Person")
@@ -55,7 +55,7 @@ func (r *PostgresPersonRepository) GetByEmail(ctx context.Context, email *string
 }
 
 // ListPaged returns a page of Persons
-func (r *PostgresPersonRepository) ListPaged(ctx context.Context, search string, page, pageSize int32) ([]domain.Person, int64, error) {
+func (r *PersonRepository) ListPaged(ctx context.Context, search string, page, pageSize int32) ([]domain.Person, int64, error) {
 	offset := (page - 1) * pageSize
 
 	total, err := r.queries.CountPersons(ctx, search)
@@ -83,7 +83,7 @@ func (r *PostgresPersonRepository) ListPaged(ctx context.Context, search string,
 // --- WRITERS ---
 
 // Create creates a new Person
-func (r *PostgresPersonRepository) Create(ctx context.Context, person *domain.Person) (*domain.Person, error) {
+func (r *PersonRepository) Create(ctx context.Context, person *domain.Person) (*domain.Person, error) {
 	row, err := r.queries.CreatePerson(ctx, dbgen.CreatePersonParams{
 		FirstName:   person.FirstName,
 		LastName:    person.LastName,
@@ -103,7 +103,7 @@ func (r *PostgresPersonRepository) Create(ctx context.Context, person *domain.Pe
 }
 
 // Update updates a Person
-func (r *PostgresPersonRepository) Update(ctx context.Context, person *domain.Person) (*domain.Person, error) {
+func (r *PersonRepository) Update(ctx context.Context, person *domain.Person) (*domain.Person, error) {
 	row, err := r.queries.UpdatePerson(ctx, dbgen.UpdatePersonParams{
 		ID:          person.ID,
 		FirstName:   person.FirstName,
@@ -124,7 +124,7 @@ func (r *PostgresPersonRepository) Update(ctx context.Context, person *domain.Pe
 }
 
 // Delete deletes a Person
-func (r *PostgresPersonRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *PersonRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeletePerson(ctx, id)
 	if err != nil {
 		return ParseDBError(err, "Person")
