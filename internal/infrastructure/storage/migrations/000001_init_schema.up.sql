@@ -189,9 +189,21 @@ BEGIN
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
     END IF;
 
+    -- Organizers
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_organizers') THEN
+        CREATE TRIGGER trig_update_organizers BEFORE UPDATE ON organizers 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
     -- Talks
     IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talks') THEN
         CREATE TRIGGER trig_update_talks BEFORE UPDATE ON talks 
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+    END IF;
+
+    -- Talks-Speakers
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talk_speakers') THEN
+        CREATE TRIGGER trig_update_talk_speakers BEFORE UPDATE ON talk_speakers 
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
     END IF;
 
