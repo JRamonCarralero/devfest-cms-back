@@ -1,6 +1,30 @@
 -- Extension for UUIDs
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+------------- DROP TABLES! -------------
+
+-- 1. Union Tables 
+DROP TABLE IF EXISTS scheduler CASCADE;
+DROP TABLE IF EXISTS talk_speakers CASCADE;
+DROP TABLE IF EXISTS tracks CASCADE;
+DROP TABLE IF EXISTS talks CASCADE;
+
+-- 2. Tables with Relations
+DROP TABLE IF EXISTS sponsors CASCADE;
+DROP TABLE IF EXISTS organizers CASCADE;
+DROP TABLE IF EXISTS collaborators CASCADE;
+DROP TABLE IF EXISTS developers CASCADE;
+DROP TABLE IF EXISTS speakers CASCADE;
+
+-- 3. Independent Tables
+DROP TABLE IF EXISTS persons CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+
+-- 4. Functions
+DROP FUNCTION IF EXISTS update_updated_at_column CASCADE;
+
+------------- CREATE TABLES! -------------
+
 -- 1. Events Table 
 CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -79,7 +103,7 @@ CREATE TABLE IF NOT EXISTS organizers (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     created_by UUID NOT NULL,
     updated_by UUID NOT NULL
-)
+);
 
 -- 4. Sponsors Table
 CREATE TABLE IF NOT EXISTS sponsors (
@@ -112,7 +136,7 @@ CREATE TABLE IF NOT EXISTS talks (
 CREATE TABLE IF NOT EXISTS talk_speakers (
     talk_id UUID NOT NULL REFERENCES talks(id) ON DELETE CASCADE,
     speaker_id UUID NOT NULL REFERENCES speakers(id) ON DELETE CASCADE,
-    PRIMARY KEY (talk_id, speaker_id)
+    PRIMARY KEY (talk_id, speaker_id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     created_by UUID NOT NULL
 );
@@ -123,7 +147,10 @@ CREATE TABLE IF NOT EXISTS tracks (
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     event_date DATE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL
 );
 
 -- 7. Scheduler Table
@@ -198,12 +225,6 @@ BEGIN
     -- Talks
     IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talks') THEN
         CREATE TRIGGER trig_update_talks BEFORE UPDATE ON talks 
-        FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
-    END IF;
-
-    -- Talks-Speakers
-    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trig_update_talk_speakers') THEN
-        CREATE TRIGGER trig_update_talk_speakers BEFORE UPDATE ON talk_speakers 
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
     END IF;
 

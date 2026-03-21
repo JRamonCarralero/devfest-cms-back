@@ -28,14 +28,6 @@ func main() {
 
 	log.Println("🚀 Connection secure and success!")
 
-	// Initialize Schema
-
-	sqlPath := "internal/infrastructure/storage/migrations/000001_init_schema.up.sql"
-
-	if err := db.InitializeSchema(dbPool, sqlPath); err != nil {
-		log.Fatalf("❌ Error: %v", err)
-	}
-
 	r := api.SetupRouter(dbPool)
 
 	log.Printf("🚀 Server running on port: %s", cfg.Port)
