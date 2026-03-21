@@ -9,12 +9,85 @@ servers:
     description: Development Server
 
 components:
+
+  # --- SECURITY SCHEMES ---
+
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  # --- PARAMETERS ---
+
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    PageSizeParam:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        default: 10
+    SearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+
+  # --- RESPONSES ---
+
+  responses:
+    BadRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+    ConflictError:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
   
+  # --- SCHEMAS ---
+
   schemas:
     # --- GENERICS ---
 
@@ -184,6 +257,8 @@ components:
         meta:
           $ref: '#/components/schemas/PagedMeta'
 
+# --- PATHS ---
+
 paths:
 
   # --- EVENTS ---
@@ -204,11 +279,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Event'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: Create an event
       description: Create an event
@@ -230,35 +301,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ConflictError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/events/{id}:
     put:
       summary: Update an event by ID
@@ -268,12 +319,7 @@ paths:
       security:
         - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       requestBody:
         required: true
         content:
@@ -288,41 +334,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ConflictError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: Delete an event by ID
       description: Delete an event by ID
@@ -331,45 +353,20 @@ paths:
       security:
         - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       responses:
         '204':
           description: No Content
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/events/id/{id}:
     get:
       summary: Get an event by ID
@@ -377,12 +374,7 @@ paths:
       tags:
         - Events
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: OK
@@ -391,23 +383,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/events/slug/{slug}:
     get:
       summary: Get an event by slug
@@ -428,23 +408,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Event'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/events/status/active:  
     get:  
       summary: Get all active events  
@@ -461,11 +429,7 @@ paths:
                 items:  
                   $ref: '#/components/schemas/Event'  
         '500':  
-          description: Internal Server Error  
-          content:  
-            application/json:  
-              schema:  
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/events/paged:
     get:
       summary: Get all events with pagination
@@ -473,12 +437,9 @@ paths:
       tags:
         - Events
       parameters:
-        - name: search
-          description: Search by name
-          in: query
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
         - name: order
           description: Order by
           in: query
@@ -487,18 +448,6 @@ paths:
             type: string
             description: Field to order by and direction (asc or desc)
             example: name_asc
-        - name: page
-          description: Page number
-          in: query
-          required: false
-          schema:
-            type: integer
-        - name: pageSize
-          description: Page size
-          in: query
-          required: false
-          schema:
-            type: integer
       responses:
         '200':
           description: OK
@@ -507,11 +456,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EventPagedResponse'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   
   # --- PERSONS ---
   
@@ -531,11 +476,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Person'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: Create a person
       description: Create a person
@@ -557,35 +498,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Person'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ConflictError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/persons/{id}:
     put:
       summary: Update a person by ID
@@ -595,12 +516,7 @@ paths:
       security:
         - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       requestBody:
         required: true
         content:
@@ -615,41 +531,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Person'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ConflictError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: Delete a person by ID
       description: Delete a person by ID
@@ -658,45 +550,20 @@ paths:
       security:
         - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       responses:
         '204':
           description: No content
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/ForbiddenError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/persons/id/{id}:
     get:
       summary: Get events for a person by ID
@@ -704,12 +571,7 @@ paths:
       tags:
         - Persons
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
           description: OK
@@ -718,23 +580,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Person'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/persons/email/{email}:
     get:
       summary: Get a person by email
@@ -755,23 +605,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Person'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/BadRequestError'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/NotFoundError'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/persons/paged:
     get:
       summary: Get all persons with pagination
@@ -779,34 +617,11 @@ paths:
       tags:
         - Persons
       parameters:
-        - name: search
-          description: Search by first_name, last_name or email
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: page
-          description: Page number
-          in: query
-          required: false
-          schema:
-            type: integer
-        - name: pageSize
-          description: Page size
-          in: query
-          required: false
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PagedPerson'
+          $ref: '#/components/responses/PagedResponse'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
+          $ref: '#/components/responses/InternalServerError'
