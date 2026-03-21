@@ -1,6 +1,10 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Talk struct {
 	ID          uuid.UUID
@@ -10,4 +14,12 @@ type Talk struct {
 	Tags        *[]string
 	Speakers    []Speaker
 	Audit
+}
+
+type TalkSpeaker struct {
+	ID        uuid.UUID
+	TalkID    uuid.UUID
+	SpeakerID uuid.UUID
+	CreatedBy uuid.UUID
+	CreatedAt time.Time
 }

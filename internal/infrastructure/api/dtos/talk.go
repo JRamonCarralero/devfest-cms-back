@@ -17,7 +17,8 @@ type UpdateTalkDTO struct {
 	UpdatedBy   uuid.UUID `json:"-"`
 }
 
-type AddSpeakerToTalkDTO struct {
-	SpeakerID uuid.UUID `json:"speaker_id" binding:"required"`
+type CreateTalkSpeakerDTO struct {
+	TalkID    uuid.UUID `json:"talk_id" binding:"required"`
+	PersonID  uuid.UUID `json:"person_id" binding:"required"`
 	CreatedBy uuid.UUID `json:"-"`
 }
