@@ -40,7 +40,7 @@ INSERT INTO tracks (
 ) VALUES (
     $1, $2, $3
 )
-RETURNING id, event_id, name, event_date, created_at
+RETURNING id, event_id, name, event_date, created_at, updated_at, created_by, updated_by
 `
 
 type CreateTrackParams struct {
@@ -58,6 +58,9 @@ func (q *Queries) CreateTrack(ctx context.Context, arg CreateTrackParams) (Track
 		&i.Name,
 		&i.EventDate,
 		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
 	)
 	return i, err
 }
@@ -73,7 +76,7 @@ func (q *Queries) DeleteTrack(ctx context.Context, id uuid.UUID) error {
 }
 
 const getTrackByID = `-- name: GetTrackByID :one
-SELECT id, event_id, name, event_date, created_at FROM tracks
+SELECT id, event_id, name, event_date, created_at, updated_at, created_by, updated_by FROM tracks
 WHERE id = $1 LIMIT 1
 `
 
@@ -86,12 +89,15 @@ func (q *Queries) GetTrackByID(ctx context.Context, id uuid.UUID) (Track, error)
 		&i.Name,
 		&i.EventDate,
 		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
 	)
 	return i, err
 }
 
 const listTracksByEvent = `-- name: ListTracksByEvent :many
-SELECT id, event_id, name, event_date, created_at FROM tracks
+SELECT id, event_id, name, event_date, created_at, updated_at, created_by, updated_by FROM tracks
 WHERE event_id = $1
 ORDER BY event_date ASC, name ASC
 `
@@ -111,6 +117,9 @@ func (q *Queries) ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]T
 			&i.Name,
 			&i.EventDate,
 			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CreatedBy,
+			&i.UpdatedBy,
 		); err != nil {
 			return nil, err
 		}
@@ -123,7 +132,7 @@ func (q *Queries) ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]T
 }
 
 const listTracksByEventPaged = `-- name: ListTracksByEventPaged :many
-SELECT id, event_id, name, event_date, created_at FROM tracks
+SELECT id, event_id, name, event_date, created_at, updated_at, created_by, updated_by FROM tracks
 WHERE event_id = $1
 AND (
     name ILIKE '%' || COALESCE($4, '') || '%'
@@ -159,6 +168,9 @@ func (q *Queries) ListTracksByEventPaged(ctx context.Context, arg ListTracksByEv
 			&i.Name,
 			&i.EventDate,
 			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CreatedBy,
+			&i.UpdatedBy,
 		); err != nil {
 			return nil, err
 		}
@@ -176,7 +188,7 @@ SET
     name = COALESCE($2, name),
     event_date = COALESCE($3, event_date)
 WHERE id = $1
-RETURNING id, event_id, name, event_date, created_at
+RETURNING id, event_id, name, event_date, created_at, updated_at, created_by, updated_by
 `
 
 type UpdateTrackParams struct {
@@ -194,6 +206,9 @@ func (q *Queries) UpdateTrack(ctx context.Context, arg UpdateTrackParams) (Track
 		&i.Name,
 		&i.EventDate,
 		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CreatedBy,
+		&i.UpdatedBy,
 	)
 	return i, err
 }

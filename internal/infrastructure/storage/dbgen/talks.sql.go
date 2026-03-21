@@ -12,16 +12,29 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addSpeakerToTalk = `-- name: AddSpeakerToTalk :exec
+INSERT INTO talk_speakers (talk_id, speaker_id, created_by)
+VALUES ($1, $2, $3)
+`
+
+type AddSpeakerToTalkParams struct {
+	TalkID    uuid.UUID `json:"talk_id"`
+	SpeakerID uuid.UUID `json:"speaker_id"`
+	CreatedBy uuid.UUID `json:"created_by"`
+}
+
+func (q *Queries) AddSpeakerToTalk(ctx context.Context, arg AddSpeakerToTalkParams) error {
+	_, err := q.db.Exec(ctx, addSpeakerToTalk, arg.TalkID, arg.SpeakerID, arg.CreatedBy)
+	return err
+}
+
 const countTalksByEvent = `-- name: CountTalksByEvent :one
 SELECT COUNT(*) 
 FROM talks t
-JOIN speakers s ON t.speaker_id = s.id
-JOIN persons p ON s.person_id = p.id
 WHERE t.event_id = $1 
 AND (
     t.title ILIKE '%' || COALESCE($2, '') || '%' OR 
-    p.first_name ILIKE '%' || COALESCE($2, '') || '%' OR 
-    p.last_name ILIKE '%' || COALESCE($2, '') || '%'
+    t.description ILIKE '%' || COALESCE($2, '') || '%'
 )
 `
 
@@ -39,22 +52,21 @@ func (q *Queries) CountTalksByEvent(ctx context.Context, arg CountTalksByEventPa
 
 const createTalk = `-- name: CreateTalk :one
 INSERT INTO talks (
-    event_id,
-    speaker_id,
-    title,
+    event_id, 
+    title, 
     description,
     tags,
-    created_by,
+    created_by, 
     updated_by
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $6
 )
-RETURNING id, event_id, speaker_id, title, description, tags, created_at, updated_at, created_by, updated_by
+VALUES (
+    $1, $2, $3, $4, $5, $5
+)
+RETURNING id, event_id, title, description, tags, created_at, updated_at, created_by, updated_by
 `
 
 type CreateTalkParams struct {
 	EventID     uuid.UUID   `json:"event_id"`
-	SpeakerID   uuid.UUID   `json:"speaker_id"`
 	Title       string      `json:"title"`
 	Description pgtype.Text `json:"description"`
 	Tags        []string    `json:"tags"`
@@ -64,7 +76,6 @@ type CreateTalkParams struct {
 func (q *Queries) CreateTalk(ctx context.Context, arg CreateTalkParams) (Talk, error) {
 	row := q.db.QueryRow(ctx, createTalk,
 		arg.EventID,
-		arg.SpeakerID,
 		arg.Title,
 		arg.Description,
 		arg.Tags,
@@ -74,7 +85,6 @@ func (q *Queries) CreateTalk(ctx context.Context, arg CreateTalkParams) (Talk, e
 	err := row.Scan(
 		&i.ID,
 		&i.EventID,
-		&i.SpeakerID,
 		&i.Title,
 		&i.Description,
 		&i.Tags,
@@ -87,7 +97,7 @@ func (q *Queries) CreateTalk(ctx context.Context, arg CreateTalkParams) (Talk, e
 }
 
 const deleteTalk = `-- name: DeleteTalk :exec
-DELETE FROM talks
+DELETE FROM talks 
 WHERE id = $1
 `
 
@@ -98,19 +108,29 @@ func (q *Queries) DeleteTalk(ctx context.Context, id uuid.UUID) error {
 
 const getTalkByID = `-- name: GetTalkByID :one
 SELECT 
-    t.id, t.event_id, t.speaker_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by, 
-    s.bio, s.company,
-    p.first_name, p.last_name, p.avatar_url
+    t.id, t.event_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by,
+    (
+        SELECT json_agg(json_build_object(
+            'id', s.id,
+            'first_name', p.first_name,
+            'last_name', p.last_name,
+            'email', p.email,
+            'avatar_url', p.avatar_url,
+            'company', s.company,
+            'bio', s.bio
+        ))
+        FROM talk_speakers ts
+        JOIN speakers s ON ts.speaker_id = s.id
+        JOIN persons p ON s.person_id = p.id
+        WHERE ts.talk_id = t.id
+    ) AS speakers
 FROM talks t
-JOIN speakers s ON t.speaker_id = s.id
-JOIN persons p ON s.person_id = p.id
 WHERE t.id = $1 LIMIT 1
 `
 
 type GetTalkByIDRow struct {
 	ID          uuid.UUID          `json:"id"`
 	EventID     uuid.UUID          `json:"event_id"`
-	SpeakerID   uuid.UUID          `json:"speaker_id"`
 	Title       string             `json:"title"`
 	Description pgtype.Text        `json:"description"`
 	Tags        []string           `json:"tags"`
@@ -118,11 +138,7 @@ type GetTalkByIDRow struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 	CreatedBy   uuid.UUID          `json:"created_by"`
 	UpdatedBy   uuid.UUID          `json:"updated_by"`
-	Bio         pgtype.Text        `json:"bio"`
-	Company     pgtype.Text        `json:"company"`
-	FirstName   string             `json:"first_name"`
-	LastName    string             `json:"last_name"`
-	AvatarUrl   pgtype.Text        `json:"avatar_url"`
+	Speakers    []byte             `json:"speakers"`
 }
 
 func (q *Queries) GetTalkByID(ctx context.Context, id uuid.UUID) (GetTalkByIDRow, error) {
@@ -131,7 +147,6 @@ func (q *Queries) GetTalkByID(ctx context.Context, id uuid.UUID) (GetTalkByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.EventID,
-		&i.SpeakerID,
 		&i.Title,
 		&i.Description,
 		&i.Tags,
@@ -139,23 +154,30 @@ func (q *Queries) GetTalkByID(ctx context.Context, id uuid.UUID) (GetTalkByIDRow
 		&i.UpdatedAt,
 		&i.CreatedBy,
 		&i.UpdatedBy,
-		&i.Bio,
-		&i.Company,
-		&i.FirstName,
-		&i.LastName,
-		&i.AvatarUrl,
+		&i.Speakers,
 	)
 	return i, err
 }
 
 const listTalksByEvent = `-- name: ListTalksByEvent :many
 SELECT 
-    t.id, t.event_id, t.speaker_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by, 
-    s.bio, s.company,
-    p.first_name, p.last_name, p.avatar_url
+    t.id, t.event_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by,
+    (
+        SELECT json_agg(json_build_object(
+            'id', s.id,
+            'first_name', p.first_name,
+            'last_name', p.last_name,
+            'email', p.email,
+            'avatar_url', p.avatar_url,
+            'company', s.company,
+            'bio', s.bio
+        ))
+        FROM talk_speakers ts
+        JOIN speakers s ON ts.speaker_id = s.id
+        JOIN persons p ON s.person_id = p.id
+        WHERE ts.talk_id = t.id
+    ) AS speakers
 FROM talks t
-JOIN speakers s ON t.speaker_id = s.id
-JOIN persons p ON s.person_id = p.id
 WHERE t.event_id = $1
 ORDER BY t.created_at DESC
 `
@@ -163,7 +185,6 @@ ORDER BY t.created_at DESC
 type ListTalksByEventRow struct {
 	ID          uuid.UUID          `json:"id"`
 	EventID     uuid.UUID          `json:"event_id"`
-	SpeakerID   uuid.UUID          `json:"speaker_id"`
 	Title       string             `json:"title"`
 	Description pgtype.Text        `json:"description"`
 	Tags        []string           `json:"tags"`
@@ -171,11 +192,7 @@ type ListTalksByEventRow struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 	CreatedBy   uuid.UUID          `json:"created_by"`
 	UpdatedBy   uuid.UUID          `json:"updated_by"`
-	Bio         pgtype.Text        `json:"bio"`
-	Company     pgtype.Text        `json:"company"`
-	FirstName   string             `json:"first_name"`
-	LastName    string             `json:"last_name"`
-	AvatarUrl   pgtype.Text        `json:"avatar_url"`
+	Speakers    []byte             `json:"speakers"`
 }
 
 func (q *Queries) ListTalksByEvent(ctx context.Context, eventID uuid.UUID) ([]ListTalksByEventRow, error) {
@@ -190,7 +207,6 @@ func (q *Queries) ListTalksByEvent(ctx context.Context, eventID uuid.UUID) ([]Li
 		if err := rows.Scan(
 			&i.ID,
 			&i.EventID,
-			&i.SpeakerID,
 			&i.Title,
 			&i.Description,
 			&i.Tags,
@@ -198,11 +214,7 @@ func (q *Queries) ListTalksByEvent(ctx context.Context, eventID uuid.UUID) ([]Li
 			&i.UpdatedAt,
 			&i.CreatedBy,
 			&i.UpdatedBy,
-			&i.Bio,
-			&i.Company,
-			&i.FirstName,
-			&i.LastName,
-			&i.AvatarUrl,
+			&i.Speakers,
 		); err != nil {
 			return nil, err
 		}
@@ -216,17 +228,27 @@ func (q *Queries) ListTalksByEvent(ctx context.Context, eventID uuid.UUID) ([]Li
 
 const listTalksByEventPaged = `-- name: ListTalksByEventPaged :many
 SELECT 
-    t.id, t.event_id, t.speaker_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by, 
-    s.bio, s.company,
-    p.first_name, p.last_name, p.avatar_url
+    t.id, t.event_id, t.title, t.description, t.tags, t.created_at, t.updated_at, t.created_by, t.updated_by,
+    (
+        SELECT json_agg(json_build_object(
+            'id', s.id,
+            'first_name', p.first_name,
+            'last_name', p.last_name,
+            'email', p.email,
+            'avatar_url', p.avatar_url,
+            'company', s.company,
+            'bio', s.bio
+        ))
+        FROM talk_speakers ts
+        JOIN speakers s ON ts.speaker_id = s.id
+        JOIN persons p ON s.person_id = p.id
+        WHERE ts.talk_id = t.id
+    ) AS speakers
 FROM talks t
-JOIN speakers s ON t.speaker_id = s.id
-JOIN persons p ON s.person_id = p.id
 WHERE t.event_id = $1 
 AND (
     t.title ILIKE '%' || COALESCE($4, '') || '%' OR 
-    p.first_name ILIKE '%' || COALESCE($4, '') || '%' OR 
-    p.last_name ILIKE '%' || COALESCE($4, '') || '%'
+    t.description ILIKE '%' || COALESCE($4, '') || '%'
 )
 ORDER BY t.created_at DESC
 LIMIT $2 OFFSET $3
@@ -242,7 +264,6 @@ type ListTalksByEventPagedParams struct {
 type ListTalksByEventPagedRow struct {
 	ID          uuid.UUID          `json:"id"`
 	EventID     uuid.UUID          `json:"event_id"`
-	SpeakerID   uuid.UUID          `json:"speaker_id"`
 	Title       string             `json:"title"`
 	Description pgtype.Text        `json:"description"`
 	Tags        []string           `json:"tags"`
@@ -250,11 +271,7 @@ type ListTalksByEventPagedRow struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 	CreatedBy   uuid.UUID          `json:"created_by"`
 	UpdatedBy   uuid.UUID          `json:"updated_by"`
-	Bio         pgtype.Text        `json:"bio"`
-	Company     pgtype.Text        `json:"company"`
-	FirstName   string             `json:"first_name"`
-	LastName    string             `json:"last_name"`
-	AvatarUrl   pgtype.Text        `json:"avatar_url"`
+	Speakers    []byte             `json:"speakers"`
 }
 
 func (q *Queries) ListTalksByEventPaged(ctx context.Context, arg ListTalksByEventPagedParams) ([]ListTalksByEventPagedRow, error) {
@@ -274,7 +291,6 @@ func (q *Queries) ListTalksByEventPaged(ctx context.Context, arg ListTalksByEven
 		if err := rows.Scan(
 			&i.ID,
 			&i.EventID,
-			&i.SpeakerID,
 			&i.Title,
 			&i.Description,
 			&i.Tags,
@@ -282,11 +298,7 @@ func (q *Queries) ListTalksByEventPaged(ctx context.Context, arg ListTalksByEven
 			&i.UpdatedAt,
 			&i.CreatedBy,
 			&i.UpdatedBy,
-			&i.Bio,
-			&i.Company,
-			&i.FirstName,
-			&i.LastName,
-			&i.AvatarUrl,
+			&i.Speakers,
 		); err != nil {
 			return nil, err
 		}
@@ -298,17 +310,25 @@ func (q *Queries) ListTalksByEventPaged(ctx context.Context, arg ListTalksByEven
 	return items, nil
 }
 
+const removeSpeakersFromTalk = `-- name: RemoveSpeakersFromTalk :exec
+DELETE FROM talk_speakers 
+WHERE talk_id = $1
+`
+
+func (q *Queries) RemoveSpeakersFromTalk(ctx context.Context, talkID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, removeSpeakersFromTalk, talkID)
+	return err
+}
+
 const updateTalk = `-- name: UpdateTalk :one
-UPDATE talks
-SET 
+UPDATE talks SET 
     title = COALESCE($3, title),
     description = COALESCE($4, description),
     tags = COALESCE($5, tags),
-    speaker_id = COALESCE($6, speaker_id),
-    updated_at = NOW(),
+    updated_at = NOW(), 
     updated_by = $2
-WHERE id = $1
-RETURNING id, event_id, speaker_id, title, description, tags, created_at, updated_at, created_by, updated_by
+WHERE id = $1 
+RETURNING id, event_id, title, description, tags, created_at, updated_at, created_by, updated_by
 `
 
 type UpdateTalkParams struct {
@@ -317,7 +337,6 @@ type UpdateTalkParams struct {
 	Title       pgtype.Text `json:"title"`
 	Description pgtype.Text `json:"description"`
 	Tags        []string    `json:"tags"`
-	SpeakerID   pgtype.UUID `json:"speaker_id"`
 }
 
 func (q *Queries) UpdateTalk(ctx context.Context, arg UpdateTalkParams) (Talk, error) {
@@ -327,13 +346,11 @@ func (q *Queries) UpdateTalk(ctx context.Context, arg UpdateTalkParams) (Talk, e
 		arg.Title,
 		arg.Description,
 		arg.Tags,
-		arg.SpeakerID,
 	)
 	var i Talk
 	err := row.Scan(
 		&i.ID,
 		&i.EventID,
-		&i.SpeakerID,
 		&i.Title,
 		&i.Description,
 		&i.Tags,

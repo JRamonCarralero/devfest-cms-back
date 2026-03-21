@@ -42,6 +42,18 @@ type Event struct {
 	UpdatedBy uuid.UUID          `json:"updated_by"`
 }
 
+type Organizer struct {
+	ID              uuid.UUID          `json:"id"`
+	PersonID        uuid.UUID          `json:"person_id"`
+	EventID         uuid.UUID          `json:"event_id"`
+	Company         pgtype.Text        `json:"company"`
+	RoleDescription pgtype.Text        `json:"role_description"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy       uuid.UUID          `json:"created_by"`
+	UpdatedBy       uuid.UUID          `json:"updated_by"`
+}
+
 type Person struct {
 	ID          uuid.UUID          `json:"id"`
 	FirstName   string             `json:"first_name"`
@@ -98,7 +110,6 @@ type Sponsor struct {
 type Talk struct {
 	ID          uuid.UUID          `json:"id"`
 	EventID     uuid.UUID          `json:"event_id"`
-	SpeakerID   uuid.UUID          `json:"speaker_id"`
 	Title       string             `json:"title"`
 	Description pgtype.Text        `json:"description"`
 	Tags        []string           `json:"tags"`
@@ -108,10 +119,20 @@ type Talk struct {
 	UpdatedBy   uuid.UUID          `json:"updated_by"`
 }
 
+type TalkSpeaker struct {
+	TalkID    uuid.UUID          `json:"talk_id"`
+	SpeakerID uuid.UUID          `json:"speaker_id"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+}
+
 type Track struct {
 	ID        uuid.UUID          `json:"id"`
 	EventID   uuid.UUID          `json:"event_id"`
 	Name      string             `json:"name"`
 	EventDate pgtype.Date        `json:"event_date"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	CreatedBy uuid.UUID          `json:"created_by"`
+	UpdatedBy uuid.UUID          `json:"updated_by"`
 }

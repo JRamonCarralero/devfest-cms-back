@@ -12,9 +12,11 @@ import (
 )
 
 type Querier interface {
+	AddSpeakerToTalk(ctx context.Context, arg AddSpeakerToTalkParams) error
 	CountCollaboratorsByEvent(ctx context.Context, arg CountCollaboratorsByEventParams) (int64, error)
 	CountDevelopersByEvent(ctx context.Context, arg CountDevelopersByEventParams) (int64, error)
 	CountEvents(ctx context.Context, dollar_1 string) (int64, error)
+	CountOrganizersByEvent(ctx context.Context, arg CountOrganizersByEventParams) (int64, error)
 	CountPersons(ctx context.Context, search string) (int64, error)
 	CountSpeakersByEvent(ctx context.Context, arg CountSpeakersByEventParams) (int64, error)
 	CountSponsorsByEvent(ctx context.Context, arg CountSponsorsByEventParams) (int64, error)
@@ -23,6 +25,7 @@ type Querier interface {
 	CreateCollaborator(ctx context.Context, arg CreateCollaboratorParams) (Collaborator, error)
 	CreateDeveloper(ctx context.Context, arg CreateDeveloperParams) (Developer, error)
 	CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error)
+	CreateOrganizer(ctx context.Context, arg CreateOrganizerParams) (Organizer, error)
 	CreatePerson(ctx context.Context, arg CreatePersonParams) (Person, error)
 	CreateScheduleEntry(ctx context.Context, arg CreateScheduleEntryParams) (Scheduler, error)
 	CreateSpeaker(ctx context.Context, arg CreateSpeakerParams) (Speaker, error)
@@ -32,6 +35,7 @@ type Querier interface {
 	DeleteCollaborator(ctx context.Context, id uuid.UUID) error
 	DeleteDeveloper(ctx context.Context, id uuid.UUID) error
 	DeleteEvent(ctx context.Context, id uuid.UUID) error
+	DeleteOrganizer(ctx context.Context, id uuid.UUID) error
 	DeletePerson(ctx context.Context, id uuid.UUID) error
 	DeleteScheduleEntry(ctx context.Context, id uuid.UUID) error
 	DeleteSpeaker(ctx context.Context, id uuid.UUID) error
@@ -45,6 +49,8 @@ type Querier interface {
 	// queries/events.sql
 	GetEventByID(ctx context.Context, id uuid.UUID) (Event, error)
 	GetEventBySlug(ctx context.Context, slug string) (Event, error)
+	GetOrganizerByID(ctx context.Context, id uuid.UUID) (GetOrganizerByIDRow, error)
+	GetOrganizerByPersonAndEvent(ctx context.Context, arg GetOrganizerByPersonAndEventParams) (uuid.UUID, error)
 	GetPersonByEmail(ctx context.Context, email pgtype.Text) (Person, error)
 	GetPersonByID(ctx context.Context, id uuid.UUID) (Person, error)
 	GetScheduleEntryByID(ctx context.Context, id uuid.UUID) (GetScheduleEntryByIDRow, error)
@@ -61,6 +67,8 @@ type Querier interface {
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
 	ListFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]ListFullEventScheduleRow, error)
+	ListOrganizersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListOrganizersByEventRow, error)
+	ListOrganizersByEventPaged(ctx context.Context, arg ListOrganizersByEventPagedParams) ([]ListOrganizersByEventPagedRow, error)
 	ListPersons(ctx context.Context) ([]Person, error)
 	// Usamos un listado con búsqueda básica por nombre/email y paginación
 	ListPersonsPaged(ctx context.Context, arg ListPersonsPagedParams) ([]Person, error)
@@ -73,9 +81,11 @@ type Querier interface {
 	ListTalksByEventPaged(ctx context.Context, arg ListTalksByEventPagedParams) ([]ListTalksByEventPagedRow, error)
 	ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]Track, error)
 	ListTracksByEventPaged(ctx context.Context, arg ListTracksByEventPagedParams) ([]Track, error)
+	RemoveSpeakersFromTalk(ctx context.Context, talkID uuid.UUID) error
 	UpdateCollaborator(ctx context.Context, arg UpdateCollaboratorParams) (Collaborator, error)
 	UpdateDeveloper(ctx context.Context, arg UpdateDeveloperParams) (Developer, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
+	UpdateOrganizer(ctx context.Context, arg UpdateOrganizerParams) (Organizer, error)
 	UpdatePerson(ctx context.Context, arg UpdatePersonParams) (Person, error)
 	UpdateScheduleEntry(ctx context.Context, arg UpdateScheduleEntryParams) (Scheduler, error)
 	UpdateSpeaker(ctx context.Context, arg UpdateSpeakerParams) (Speaker, error)

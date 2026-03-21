@@ -14,12 +14,12 @@ INSERT INTO organizers (
   person_id, 
   event_id, 
   company,
-  role_description 
+  role_description,
   created_by, 
   updated_by
 )
 VALUES (
-  $1, $2, $3, $4, $4
+  $1, $2, $3, $4, $5, $5
 )
 RETURNING *;
 

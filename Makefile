@@ -5,8 +5,6 @@ BINARY_NAME=server
 MAIN_PATH=cmd/server/main.go
 SCHEMA_PATH=internal/infrastructure/storage/migrations/000001_init_schema.up.sql
 
-DB_URL=postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable
-
 .PHONY: generate tidy dev build db-init guard-env
 
 # Validate .env
@@ -18,9 +16,12 @@ guard-env:
 
 # Initialize database (clear and recreate)
 db-init: guard-env
-	@echo "Recreating database $(DB_NAME) in $(DB_HOST)..."
-	@psql $(DB_URL) -f $(SCHEMA_PATH)
-	@echo "Database $(DB_NAME) ready!"
+	@echo "Configuring database $(DB_USER)..."
+	@echo $(DB_HOST):$(DB_PORT_MF):$(DB_NAME):$(DB_USER):$(DB_PASSWORD) > pgpass_temp
+	@echo "Conectando a Supabase..."
+	@set "PGPASSFILE=pgpass_temp" && psql -h $(DB_HOST) -p $(DB_PORT_MF) -U $(DB_USER) -d $(DB_NAME) -f $(SCHEMA_PATH)
+	@rm -f pgpass_temp || del pgpass_temp
+	@echo "✅ Tables initialized!"
 
 # Generate SQLC code
 generate:
