@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"devfest/internal/domain"
-	"devfest/internal/infrastructure/api/dtos"
 
 	"github.com/google/uuid"
 )
@@ -57,21 +56,8 @@ func (i *personInteractor) ListPaged(ctx context.Context, search string, page, p
 // --- Writers ---
 
 // Create creates a new person
-func (i *personInteractor) Create(ctx context.Context, dto dtos.CreatePersonDTO) (*domain.Person, error) {
-	createdPerson, err := i.repo.Create(ctx, &domain.Person{
-		FirstName:   dto.FirstName,
-		LastName:    dto.LastName,
-		Email:       dto.Email,
-		AvatarURL:   dto.AvatarURL,
-		GithubUser:  dto.GithubUser,
-		LinkedinURL: dto.LinkedinURL,
-		TwitterURL:  dto.TwitterURL,
-		WebsiteURL:  dto.WebsiteURL,
-		Audit: domain.Audit{
-			CreatedBy: dto.CreatedBy,
-			UpdatedBy: dto.CreatedBy,
-		},
-	})
+func (i *personInteractor) Create(ctx context.Context, person *domain.Person) (*domain.Person, error) {
+	createdPerson, err := i.repo.Create(ctx, person)
 
 	if err != nil {
 		return nil, err
@@ -81,38 +67,38 @@ func (i *personInteractor) Create(ctx context.Context, dto dtos.CreatePersonDTO)
 }
 
 // Update validates params and updates a person
-func (i *personInteractor) Update(ctx context.Context, id uuid.UUID, dto dtos.UpdatePersonDTO) (*domain.Person, error) {
+func (i *personInteractor) Update(ctx context.Context, id uuid.UUID, upPerson *domain.UpdatePerson) (*domain.Person, error) {
 	person, err := i.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if dto.FirstName != nil {
-		person.FirstName = *dto.FirstName
+	if upPerson.FirstName != nil {
+		person.FirstName = *upPerson.FirstName
 	}
-	if dto.LastName != nil {
-		person.LastName = *dto.LastName
+	if upPerson.LastName != nil {
+		person.LastName = *upPerson.LastName
 	}
-	if dto.Email != nil {
-		person.Email = dto.Email
+	if upPerson.Email != nil {
+		person.Email = upPerson.Email
 	}
-	if dto.AvatarURL != nil {
-		person.AvatarURL = dto.AvatarURL
+	if upPerson.AvatarURL != nil {
+		person.AvatarURL = upPerson.AvatarURL
 	}
-	if dto.GithubUser != nil {
-		person.GithubUser = dto.GithubUser
+	if upPerson.GithubUser != nil {
+		person.GithubUser = upPerson.GithubUser
 	}
-	if dto.LinkedinURL != nil {
-		person.LinkedinURL = dto.LinkedinURL
+	if upPerson.LinkedinURL != nil {
+		person.LinkedinURL = upPerson.LinkedinURL
 	}
-	if dto.TwitterURL != nil {
-		person.TwitterURL = dto.TwitterURL
+	if upPerson.TwitterURL != nil {
+		person.TwitterURL = upPerson.TwitterURL
 	}
-	if dto.WebsiteURL != nil {
-		person.WebsiteURL = dto.WebsiteURL
+	if upPerson.WebsiteURL != nil {
+		person.WebsiteURL = upPerson.WebsiteURL
 	}
 
-	person.Audit.UpdatedBy = dto.UpdatedBy
+	person.Audit.UpdatedBy = upPerson.UpdatedBy
 
 	updatedPerson, err := i.repo.Update(ctx, person)
 	if err != nil {
