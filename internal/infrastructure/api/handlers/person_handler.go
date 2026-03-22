@@ -64,7 +64,6 @@ func (h *PersonHandler) GetByEmail(ctx *gin.Context) {
 // GetPaged
 func (h *PersonHandler) GetPaged(ctx *gin.Context) {
 	search := ctx.DefaultQuery("search", "")
-
 	page, pageSize := utils.GetPaginationParams(ctx)
 	if pageSize > 100 {
 		pageSize = 100

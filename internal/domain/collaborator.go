@@ -14,6 +14,12 @@ type Collaborator struct {
 	Audit
 }
 
+type UpdateCollaborator struct {
+	Area      *string
+	PersonID  *uuid.UUID
+	UpdatedBy uuid.UUID
+}
+
 type CollaboratorUsecase interface {
 	// Readers
 	GetAll(ctx context.Context, eventID uuid.UUID) ([]Collaborator, error)
@@ -21,7 +27,7 @@ type CollaboratorUsecase interface {
 	ListPaged(ctx context.Context, eventID uuid.UUID, search string, page, pageSize int32) ([]Collaborator, int64, error)
 	// Writers
 	Create(ctx context.Context, collaborator *Collaborator) (*Collaborator, error)
-	Update(ctx context.Context, collaborator *Collaborator) (*Collaborator, error)
+	Update(ctx context.Context, id uuid.UUID, collaborator *UpdateCollaborator) (*Collaborator, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 

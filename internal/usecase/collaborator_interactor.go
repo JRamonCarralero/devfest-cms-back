@@ -75,7 +75,20 @@ func (c *collaboratorInteractor) Create(ctx context.Context, collaborator *domai
 }
 
 // Update
-func (c *collaboratorInteractor) Update(ctx context.Context, collaborator *domain.Collaborator) (*domain.Collaborator, error) {
+func (c *collaboratorInteractor) Update(ctx context.Context, id uuid.UUID, updCol *domain.UpdateCollaborator) (*domain.Collaborator, error) {
+	collaborator, err := c.colRepo.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if updCol.Area != nil {
+		collaborator.Area = updCol.Area
+	}
+	if updCol.PersonID != nil {
+		collaborator.Person.ID = *updCol.PersonID
+	}
+	collaborator.UpdatedBy = updCol.UpdatedBy
+
 	return c.colRepo.Update(ctx, collaborator)
 }
 
