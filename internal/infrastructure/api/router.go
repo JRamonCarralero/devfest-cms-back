@@ -45,6 +45,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	personUsecase := usecase.NewPersonInteractor(personRepo)
 	personHandler := handlers.NewPersonHandler(personUsecase)
 
+	// Collaborators
+	collaboratorRepo := repository.NewCollaboratorRepository(queries)
+	collaboratorUsecase := usecase.NewCollaboratorInteractor(collaboratorRepo, personRepo, eventRepo)
+	collaboratorHandler := handlers.NewCollaboratorHandler(collaboratorUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -76,6 +81,19 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protectedPersons.POST("", personHandler.Create)
 		protectedPersons.PUT("/:id", personHandler.Update)
 		protectedPersons.DELETE("/:id", personHandler.Delete)
+	}
+
+	collaborators := api.Group("/collaborators")
+	protectedCollaborators := collaborators.Group("/")
+	protectedCollaborators.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		collaborators.GET("/event/:event-id", collaboratorHandler.GetAll)
+		collaborators.GET("/id/:id", collaboratorHandler.GetByID)
+		collaborators.GET("/event/:event-id/paged", collaboratorHandler.ListPaged)
+
+		protectedCollaborators.POST("", collaboratorHandler.Create)
+		protectedCollaborators.PUT("/:id", collaboratorHandler.Update)
+		protectedCollaborators.DELETE("/:id", collaboratorHandler.Delete)
 	}
 
 	return r
