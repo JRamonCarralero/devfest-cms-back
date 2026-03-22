@@ -91,21 +91,6 @@ components:
   schemas:
     # --- GENERICS ---
 
-    Audit:
-      type: object
-      properties:
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        created_by:
-          type: string
-          format: uuid
-        updated_by:
-          type: string
-          format: uuid
     AppError:
       type: object
       properties:
@@ -147,8 +132,18 @@ components:
           type: string
         is_active:
           type: boolean
-        audit:
-          $ref: '#/components/schemas/Audit'
+        created_by:
+          type: string
+          format: uuid
+        updated_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     CreateEventDTO:
       type: object
       required:
@@ -204,8 +199,18 @@ components:
           type: string
         website_url:
           type: string
-        audit:
-          $ref: '#/components/schemas/Audit'
+        created_by:
+          type: string
+          format: uuid
+        updated_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     CreatePersonDTO:
       type: object
       required:

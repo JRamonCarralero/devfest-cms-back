@@ -7,10 +7,9 @@ import (
 )
 
 type CreateEventDTO struct {
-	Name      string    `json:"name" binding:"required,min=3,max=100"`
-	Slug      string    `json:"slug" binding:"required,lowercase"`
-	IsActive  *bool     `json:"is_active" binding:"omitempty"`
-	CreatedBy uuid.UUID `json:"-"`
+	Name     string `json:"name" binding:"required,min=3,max=100"`
+	Slug     string `json:"slug" binding:"required,lowercase"`
+	IsActive *bool  `json:"is_active" binding:"omitempty"`
 }
 
 type UpdateEventDTO struct {

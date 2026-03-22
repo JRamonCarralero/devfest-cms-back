@@ -144,7 +144,6 @@ func (h *EventHandler) Create(c *gin.Context) {
 		response.HandleError(c, err)
 		return
 	}
-	dto.CreatedBy = uid
 
 	isActive := false
 	if dto.IsActive != nil {
@@ -157,8 +156,8 @@ func (h *EventHandler) Create(c *gin.Context) {
 		Slug:     dto.Slug,
 		IsActive: dto.IsActive,
 		Audit: domain.Audit{
-			CreatedBy: dto.CreatedBy,
-			UpdatedBy: dto.CreatedBy,
+			CreatedBy: uid,
+			UpdatedBy: uid,
 		},
 	}
 
