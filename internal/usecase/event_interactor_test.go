@@ -7,7 +7,6 @@ import (
 
 	"devfest/internal/domain"
 	"devfest/internal/domain/mocks"
-	"devfest/internal/infrastructure/api/dtos"
 	"devfest/internal/usecase"
 
 	"github.com/google/uuid"
@@ -162,11 +161,14 @@ func TestEventInteractor(t *testing.T) {
 		userID := uuid.New()
 		isActive := true
 
-		dto := dtos.CreateEventDTO{
-			Name:      "DevFest 2026",
-			Slug:      "devfest-2026",
-			IsActive:  &isActive,
-			CreatedBy: userID,
+		dto := domain.Event{
+			Name:     "DevFest 2026",
+			Slug:     "devfest-2026",
+			IsActive: &isActive,
+			Audit: domain.Audit{
+				CreatedBy: userID,
+				UpdatedBy: userID,
+			},
 		}
 
 		t.Run("should successfully create event with UUID audit", func(t *testing.T) {
@@ -180,7 +182,7 @@ func TestEventInteractor(t *testing.T) {
 			})).Return(&domain.Event{ID: uuid.New(), Name: dto.Name}, nil)
 
 			interactor := usecase.NewEventInteractor(repo)
-			res, err := interactor.CreateEvent(ctx, dto)
+			res, err := interactor.CreateEvent(ctx, &dto)
 
 			assert.NoError(t, err)
 			assert.NotNil(t, res)
@@ -202,7 +204,7 @@ func TestEventInteractor(t *testing.T) {
 			}
 
 			newName := "Updated Name"
-			dto := dtos.UpdateEventDTO{
+			dto := domain.UpdateEvent{
 				Name:      &newName,
 				UpdatedBy: editorID,
 			}
@@ -213,7 +215,7 @@ func TestEventInteractor(t *testing.T) {
 				return e.Name == "Updated Name" && e.UpdatedBy == editorID
 			})).Return(&domain.Event{ID: eventID, Name: "Updated Name"}, nil).Once()
 
-			res, err := interactor.UpdateEvent(ctx, eventID, dto)
+			res, err := interactor.UpdateEvent(ctx, eventID, &dto)
 
 			assert.NoError(t, err)
 			assert.Equal(t, "Updated Name", res.Name)

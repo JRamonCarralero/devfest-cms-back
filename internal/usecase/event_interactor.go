@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"devfest/internal/domain"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -82,8 +83,9 @@ func (i *eventInteractor) GetEventsPaged(ctx context.Context, search string, pag
 
 // CreateEvent creates a new Event
 func (i *eventInteractor) CreateEvent(ctx context.Context, event *domain.Event) (*domain.Event, error) {
-	createdEvent, err := i.repo.Create(ctx, event)
+	event.Slug = strings.ToLower(strings.TrimSpace(event.Slug))
 
+	createdEvent, err := i.repo.Create(ctx, event)
 	if err != nil {
 		return nil, err
 	}
