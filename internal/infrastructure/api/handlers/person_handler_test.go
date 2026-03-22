@@ -55,7 +55,7 @@ func TestPersonHandler(t *testing.T) {
 		}
 		jsonBody, _ := json.Marshal(body)
 
-		mockUsecase.On("Create", mock.Anything, mock.AnythingOfType("dtos.CreatePersonDTO")).
+		mockUsecase.On("Create", mock.Anything, mock.AnythingOfType("*domain.Person")).
 			Return(&domain.Person{ID: uuid.New(), FirstName: "Jane"}, nil).Once()
 
 		req, _ := http.NewRequest(http.MethodPost, "/persons", bytes.NewBuffer(jsonBody))
@@ -94,7 +94,7 @@ func TestPersonHandler(t *testing.T) {
 		body := map[string]interface{}{"first_name": "Updated"}
 		jsonBody, _ := json.Marshal(body)
 
-		mockUsecase.On("Update", mock.Anything, id, mock.AnythingOfType("dtos.UpdatePersonDTO")).
+		mockUsecase.On("Update", mock.Anything, id, mock.AnythingOfType("*domain.UpdatePerson")).
 			Return(&domain.Person{ID: id, FirstName: "Updated"}, nil).Once()
 
 		req, _ := http.NewRequest(http.MethodPut, "/persons/"+id.String(), bytes.NewBuffer(jsonBody))

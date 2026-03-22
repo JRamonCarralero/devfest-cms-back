@@ -5,7 +5,6 @@ package mocks
 import (
 	context "context"
 	domain "devfest/internal/domain"
-	dtos "devfest/internal/infrastructure/api/dtos"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -17,9 +16,9 @@ type EventUsecase struct {
 	mock.Mock
 }
 
-// CreateEvent provides a mock function with given fields: ctx, dto
-func (_m *EventUsecase) CreateEvent(ctx context.Context, dto dtos.CreateEventDTO) (*domain.Event, error) {
-	ret := _m.Called(ctx, dto)
+// CreateEvent provides a mock function with given fields: ctx, event
+func (_m *EventUsecase) CreateEvent(ctx context.Context, event *domain.Event) (*domain.Event, error) {
+	ret := _m.Called(ctx, event)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateEvent")
@@ -27,19 +26,19 @@ func (_m *EventUsecase) CreateEvent(ctx context.Context, dto dtos.CreateEventDTO
 
 	var r0 *domain.Event
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, dtos.CreateEventDTO) (*domain.Event, error)); ok {
-		return rf(ctx, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Event) (*domain.Event, error)); ok {
+		return rf(ctx, event)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, dtos.CreateEventDTO) *domain.Event); ok {
-		r0 = rf(ctx, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Event) *domain.Event); ok {
+		r0 = rf(ctx, event)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Event)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, dtos.CreateEventDTO) error); ok {
-		r1 = rf(ctx, dto)
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.Event) error); ok {
+		r1 = rf(ctx, event)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -222,9 +221,9 @@ func (_m *EventUsecase) GetEventsPaged(ctx context.Context, search string, page 
 	return r0, r1, r2
 }
 
-// UpdateEvent provides a mock function with given fields: ctx, id, dto
-func (_m *EventUsecase) UpdateEvent(ctx context.Context, id uuid.UUID, dto dtos.UpdateEventDTO) (*domain.Event, error) {
-	ret := _m.Called(ctx, id, dto)
+// UpdateEvent provides a mock function with given fields: ctx, id, evUpdate
+func (_m *EventUsecase) UpdateEvent(ctx context.Context, id uuid.UUID, evUpdate *domain.UpdateEvent) (*domain.Event, error) {
+	ret := _m.Called(ctx, id, evUpdate)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateEvent")
@@ -232,19 +231,19 @@ func (_m *EventUsecase) UpdateEvent(ctx context.Context, id uuid.UUID, dto dtos.
 
 	var r0 *domain.Event
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, dtos.UpdateEventDTO) (*domain.Event, error)); ok {
-		return rf(ctx, id, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *domain.UpdateEvent) (*domain.Event, error)); ok {
+		return rf(ctx, id, evUpdate)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, dtos.UpdateEventDTO) *domain.Event); ok {
-		r0 = rf(ctx, id, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *domain.UpdateEvent) *domain.Event); ok {
+		r0 = rf(ctx, id, evUpdate)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Event)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID, dtos.UpdateEventDTO) error); ok {
-		r1 = rf(ctx, id, dto)
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID, *domain.UpdateEvent) error); ok {
+		r1 = rf(ctx, id, evUpdate)
 	} else {
 		r1 = ret.Error(1)
 	}
