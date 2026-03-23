@@ -114,16 +114,15 @@ func (ch *CollaboratorHandler) Create(ctx *gin.Context) {
 		response.HandleError(ctx, err)
 		return
 	}
-	dto.CreatedBy = uid
 
-	collaborator := &domain.Collaborator{
+	coll := &domain.Collaborator{
 		EventID: dto.EventID,
 		Area:    dto.Area,
 		Person:  domain.Person{ID: dto.PersonID},
 		Audit:   domain.Audit{CreatedBy: uid},
 	}
 
-	collaborator, err = ch.usecase.Create(ctx.Request.Context(), collaborator)
+	collaborator, err := ch.usecase.Create(ctx.Request.Context(), coll)
 	if err != nil {
 		response.HandleError(ctx, err)
 		return

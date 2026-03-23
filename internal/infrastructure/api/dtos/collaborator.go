@@ -7,10 +7,9 @@ import (
 )
 
 type CreateCollaboratorDTO struct {
-	PersonID  uuid.UUID `json:"person_id" binding:"required"`
-	EventID   uuid.UUID `json:"event_id" binding:"required"`
-	Area      *string   `json:"area" binding:"required"`
-	CreatedBy uuid.UUID `json:"-"`
+	PersonID uuid.UUID `json:"person_id" binding:"required"`
+	EventID  uuid.UUID `json:"event_id" binding:"required"`
+	Area     *string   `json:"area" binding:"required"`
 }
 
 type UpdateCollaboratorDTO struct {

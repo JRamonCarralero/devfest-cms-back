@@ -1,6 +1,10 @@
 package dtos
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type CreateSpeakerDTO struct {
 	PersonID uuid.UUID `json:"person_id" validate:"required"`
@@ -28,8 +32,8 @@ type SpeakerDetailResponse struct {
 	TwitterUrl  string    `json:"twitter_url"`
 	LinkedinUrl string    `json:"linkedin_url"`
 	WebsiteUrl  string    `json:"website_url"`
-	CreatedAt   string    `json:"created_at"`
-	UpdatedAt   string    `json:"updated_at"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 	CreatedBy   uuid.UUID `json:"created_by"`
 	UpdatedBy   uuid.UUID `json:"updated_by"`
 }
@@ -40,8 +44,8 @@ type SpeakerResponse struct {
 	PersonID  uuid.UUID `json:"person_id"`
 	Bio       string    `json:"bio"`
 	Company   string    `json:"company"`
-	CreatedAt string    `json:"created_at"`
-	UpdatedAt string    `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 	CreatedBy uuid.UUID `json:"created_by"`
 	UpdatedBy uuid.UUID `json:"updated_by"`
 }
