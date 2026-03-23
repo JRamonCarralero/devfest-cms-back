@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"devfest/internal/domain"
+	"devfest/internal/infrastructure/api/utils"
 	"devfest/internal/infrastructure/storage/dbgen"
 
 	"github.com/google/uuid"
@@ -103,7 +104,7 @@ func (r *EventRepository) Create(ctx context.Context, event *domain.Event) (*dom
 	params := dbgen.CreateEventParams{
 		Name:      event.Name,
 		Slug:      event.Slug,
-		IsActive:  ToPgBool(event.IsActive),
+		IsActive:  utils.ToPgBool(event.IsActive),
 		CreatedBy: event.CreatedBy,
 	}
 
@@ -120,7 +121,7 @@ func (r *EventRepository) Update(ctx context.Context, event *domain.Event) (*dom
 		ID:        event.ID,
 		Name:      event.Name,
 		Slug:      event.Slug,
-		IsActive:  ToPgBool(event.IsActive),
+		IsActive:  utils.ToPgBool(event.IsActive),
 		UpdatedBy: event.Audit.UpdatedBy,
 	}
 

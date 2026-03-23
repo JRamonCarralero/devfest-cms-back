@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"devfest/internal/domain"
+	"devfest/internal/infrastructure/api/utils"
 	"devfest/internal/infrastructure/storage/dbgen"
 
 	"github.com/google/uuid"
@@ -51,7 +52,7 @@ type collaboratorFlat struct {
 
 // --- READERS ---
 
-// GetAll returns all collaborators
+// GetAll
 func (r *CollaboratorRepository) GetAll(ctx context.Context, eventID uuid.UUID) ([]domain.Collaborator, error) {
 	rows, err := r.queries.ListCollaboratorsByEvent(ctx, eventID)
 	if err != nil {
@@ -96,7 +97,7 @@ func (r *CollaboratorRepository) ListPaged(ctx context.Context, eventID uuid.UUI
 
 	arg := dbgen.CountCollaboratorsByEventParams{
 		EventID: eventID,
-		Search:  TextToPgString(search),
+		Search:  utils.TextToPgString(search),
 	}
 	total, err := r.queries.CountCollaboratorsByEvent(ctx, arg)
 	if err != nil {
@@ -105,7 +106,7 @@ func (r *CollaboratorRepository) ListPaged(ctx context.Context, eventID uuid.UUI
 
 	rows, err := r.queries.ListCollaboratorsByEventPaged(ctx, dbgen.ListCollaboratorsByEventPagedParams{
 		EventID: eventID,
-		Search:  TextToPgString(search),
+		Search:  utils.TextToPgString(search),
 		Limit:   pageSize,
 		Offset:  offset,
 	})
@@ -127,7 +128,7 @@ func (r *CollaboratorRepository) ListPaged(ctx context.Context, eventID uuid.UUI
 func (r *CollaboratorRepository) Create(ctx context.Context, collaborator *domain.Collaborator) (*domain.Collaborator, error) {
 	row, err := r.queries.CreateCollaborator(ctx, dbgen.CreateCollaboratorParams{
 		EventID:   collaborator.EventID,
-		Area:      PtrToText(collaborator.Area),
+		Area:      utils.PtrToText(collaborator.Area),
 		PersonID:  collaborator.Person.ID,
 		CreatedBy: collaborator.CreatedBy,
 	})
@@ -142,7 +143,7 @@ func (r *CollaboratorRepository) Create(ctx context.Context, collaborator *domai
 func (r *CollaboratorRepository) Update(ctx context.Context, collaborator *domain.Collaborator) (*domain.Collaborator, error) {
 	row, err := r.queries.UpdateCollaborator(ctx, dbgen.UpdateCollaboratorParams{
 		ID:        collaborator.ID,
-		Area:      PtrToText(collaborator.Area),
+		Area:      utils.PtrToText(collaborator.Area),
 		UpdatedBy: collaborator.UpdatedBy,
 	})
 	if err != nil {
@@ -169,17 +170,17 @@ func mapToDomainCollaborator(dbCollaborator collaboratorFlatRow) *domain.Collabo
 	return &domain.Collaborator{
 		ID:      dbCollaborator.ID,
 		EventID: dbCollaborator.EventID,
-		Area:    TextToPtr(dbCollaborator.Area),
+		Area:    utils.TextToPtr(dbCollaborator.Area),
 		Person: domain.Person{
 			ID:          dbCollaborator.PersonID,
 			FirstName:   dbCollaborator.FirstName,
 			LastName:    dbCollaborator.LastName,
-			Email:       TextToPtr(dbCollaborator.Email),
-			AvatarURL:   TextToPtr(dbCollaborator.AvatarUrl),
-			GithubUser:  TextToPtr(dbCollaborator.GithubUser),
-			LinkedinURL: TextToPtr(dbCollaborator.LinkedinUrl),
-			TwitterURL:  TextToPtr(dbCollaborator.TwitterUrl),
-			WebsiteURL:  TextToPtr(dbCollaborator.WebsiteUrl),
+			Email:       utils.TextToPtr(dbCollaborator.Email),
+			AvatarURL:   utils.TextToPtr(dbCollaborator.AvatarUrl),
+			GithubUser:  utils.TextToPtr(dbCollaborator.GithubUser),
+			LinkedinURL: utils.TextToPtr(dbCollaborator.LinkedinUrl),
+			TwitterURL:  utils.TextToPtr(dbCollaborator.TwitterUrl),
+			WebsiteURL:  utils.TextToPtr(dbCollaborator.WebsiteUrl),
 		},
 		Audit: domain.Audit{
 			CreatedAt: dbCollaborator.CreatedAt.Time,
@@ -195,7 +196,7 @@ func mapToDomainCollaboratorFlat(dbCollaborator collaboratorFlat) *domain.Collab
 	return &domain.Collaborator{
 		ID:      dbCollaborator.ID,
 		EventID: dbCollaborator.EventID,
-		Area:    TextToPtr(dbCollaborator.Area),
+		Area:    utils.TextToPtr(dbCollaborator.Area),
 		Person: domain.Person{
 			ID: dbCollaborator.PersonID,
 		},
