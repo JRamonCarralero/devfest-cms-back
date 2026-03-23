@@ -19,6 +19,17 @@ type UpdateDeveloper struct {
 	UpdatedBy       uuid.UUID
 }
 
+type DeveloperUsecase interface {
+	// Readers
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Developer, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Developer, error)
+	ListPaged(ctx context.Context, eventID uuid.UUID, search string, page, pageSize int32) ([]Developer, int64, error)
+	// Writers
+	Create(ctx context.Context, developer *Developer) (*Developer, error)
+	Update(ctx context.Context, id uuid.UUID, upDev *UpdateDeveloper) (*Developer, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
 type DeveloperRepository interface {
 	// Readers
 	GetAll(ctx context.Context, eventID uuid.UUID) ([]Developer, error)

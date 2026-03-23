@@ -84,9 +84,6 @@ func (c *collaboratorInteractor) Update(ctx context.Context, id uuid.UUID, updCo
 	if updCol.Area != nil {
 		collaborator.Area = updCol.Area
 	}
-	if updCol.PersonID != nil {
-		collaborator.Person.ID = *updCol.PersonID
-	}
 	collaborator.UpdatedBy = updCol.UpdatedBy
 
 	return c.colRepo.Update(ctx, collaborator)

@@ -16,7 +16,6 @@ type Collaborator struct {
 
 type UpdateCollaborator struct {
 	Area      *string
-	PersonID  *uuid.UUID
 	UpdatedBy uuid.UUID
 }
 

@@ -14,8 +14,7 @@ type CreateCollaboratorDTO struct {
 }
 
 type UpdateCollaboratorDTO struct {
-	Area     *string    `json:"area" binding:"omitempty"`
-	PersonID *uuid.UUID `json:"person_id" binding:"omitempty"`
+	Area *string `json:"area" binding:"omitempty"`
 }
 
 type CollaboratorDetailResponse struct {

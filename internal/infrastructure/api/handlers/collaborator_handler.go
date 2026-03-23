@@ -158,7 +158,6 @@ func (ch *CollaboratorHandler) Update(ctx *gin.Context) {
 
 	updCollaborator := domain.UpdateCollaborator{
 		Area:      dto.Area,
-		PersonID:  dto.PersonID,
 		UpdatedBy: uid,
 	}
 

@@ -21,6 +21,17 @@ type UpdateSpeaker struct {
 	UpdatedBy uuid.UUID
 }
 
+type SpeakerUsecase interface {
+	// Readers
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Speaker, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Speaker, error)
+	ListPaged(ctx context.Context, eventID uuid.UUID, search string, page, pageSize int32) ([]Speaker, int64, error)
+	// Writers
+	Create(ctx context.Context, speaker *Speaker) (*Speaker, error)
+	Update(ctx context.Context, id uuid.UUID, upSpeaker *UpdateSpeaker) (*Speaker, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
 type SpeakerRepository interface {
 	// Readers
 	GetAll(ctx context.Context, eventID uuid.UUID) ([]Speaker, error)
