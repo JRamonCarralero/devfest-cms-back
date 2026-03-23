@@ -50,6 +50,21 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	collaboratorUsecase := usecase.NewCollaboratorInteractor(collaboratorRepo, personRepo, eventRepo)
 	collaboratorHandler := handlers.NewCollaboratorHandler(collaboratorUsecase)
 
+	// Developers
+	developerRepo := repository.NewDeveloperRepository(queries)
+	developerUsecase := usecase.NewDeveloperInteractor(developerRepo, personRepo, eventRepo)
+	developerHandler := handlers.NewDeveloperHandler(developerUsecase)
+
+	// Organizers
+	organizerRepo := repository.NewOrganizerRepository(queries)
+	organizerUsecase := usecase.NewOrganizerInteractor(organizerRepo, personRepo, eventRepo)
+	organizerHandler := handlers.NewOrganizerHandler(organizerUsecase)
+
+	// Speakers
+	speakerRepo := repository.NewSpeakerRepository(queries)
+	speakerUsecase := usecase.NewSpeakerInteractor(speakerRepo, personRepo, eventRepo)
+	speakerHandler := handlers.NewSpeakerHandler(speakerUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -94,6 +109,45 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protectedCollaborators.POST("", collaboratorHandler.Create)
 		protectedCollaborators.PUT("/:id", collaboratorHandler.Update)
 		protectedCollaborators.DELETE("/:id", collaboratorHandler.Delete)
+	}
+
+	developers := api.Group("/developers")
+	protectedDevelopers := developers.Group("/")
+	protectedDevelopers.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		developers.GET("/event/:event-id", developerHandler.GetAll)
+		developers.GET("/id/:id", developerHandler.GetByID)
+		developers.GET("/event/:event-id/paged", developerHandler.ListPaged)
+
+		protectedDevelopers.POST("", developerHandler.Create)
+		protectedDevelopers.PUT("/:id", developerHandler.Update)
+		protectedDevelopers.DELETE("/:id", developerHandler.Delete)
+	}
+
+	organizers := api.Group("/organizers")
+	protectedOrganizers := organizers.Group("/")
+	protectedOrganizers.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		organizers.GET("/event/:event-id", organizerHandler.GetAll)
+		organizers.GET("/id/:id", organizerHandler.GetByID)
+		organizers.GET("/event/:event-id/paged", organizerHandler.ListPaged)
+
+		protectedOrganizers.POST("", organizerHandler.Create)
+		protectedOrganizers.PUT("/:id", organizerHandler.Update)
+		protectedOrganizers.DELETE("/:id", organizerHandler.Delete)
+	}
+
+	speakers := api.Group("/speakers")
+	protectedSpeakers := speakers.Group("/")
+	protectedSpeakers.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		speakers.GET("/event/:event-id", speakerHandler.GetAll)
+		speakers.GET("/id/:id", speakerHandler.GetByID)
+		speakers.GET("/event/:event-id/paged", speakerHandler.ListPaged)
+
+		protectedSpeakers.POST("", speakerHandler.Create)
+		protectedSpeakers.PUT("/:id", speakerHandler.Update)
+		protectedSpeakers.DELETE("/:id", speakerHandler.Delete)
 	}
 
 	return r
