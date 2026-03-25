@@ -80,7 +80,7 @@ func TestEventRepository_ListPaged(t *testing.T) {
 	repo := NewEventRepository(testQueries)
 
 	createTestEvent(t, repo, "Apple Event", "apple-slug")
-	createTestEvent(t, repo, "Banana Event", "banana-slug")
+	createTestEvent(t, repo, "Zanana Event", "banana-slug")
 
 	t.Run("Search by name", func(t *testing.T) {
 		events, total, err := repo.ListPaged(context.Background(), "Apple", 1, 10, "name_asc")
@@ -94,7 +94,7 @@ func TestEventRepository_ListPaged(t *testing.T) {
 		assert.NoError(t, err)
 
 		if assert.True(t, len(events) >= 2) {
-			assert.Equal(t, "Banana Event", events[0].Name)
+			assert.Equal(t, "Zanana Event", events[0].Name)
 		}
 	})
 }
