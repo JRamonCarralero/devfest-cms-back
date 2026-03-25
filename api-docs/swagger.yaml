@@ -117,21 +117,28 @@ components:
           type: integer
           format: int32
           example: 10
-
-    # --- EVENTS ---
-
-    Event:
+    PersonFieldsDTO:
       type: object
       properties:
-        id:
+        first_name:
           type: string
-          format: uuid
-        name:
+        last_name:
           type: string
-        slug:
+        email:
           type: string
-        is_active:
-          type: boolean
+        avatar_url:
+          type: string
+        github_user:
+          type: string
+        linkedin_url:
+          type: string
+        twitter_url:
+          type: string
+        website_url:
+          type: string
+    AuditDTO:
+      type: object
+      properties:
         created_by:
           type: string
           format: uuid
@@ -144,18 +151,18 @@ components:
         updated_at:
           type: string
           format: date-time
-    CreateEventDTO:
+    PersonAndEventFieldsDTO:
       type: object
-      required:
-        - name
-        - slug
       properties:
-        name:
+        person_id:
           type: string
-        slug:
+          format: uuid
+        event_id:
           type: string
-        is_active:
-          type: boolean
+          format: uuid
+
+    # --- EVENTS ---
+
     UpdateEventDTO:
       type: object
       properties:
@@ -165,100 +172,204 @@ components:
           type: string
         is_active:
           type: boolean
+    CreateEventDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateEventDTO'
+      - type: object
+        required: [name, slug]
+    EventResponse:
+      allOf:
+      - type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+      - $ref: '#/components/schemas/CreateEventDTO'
+      - $ref: '#/components/schemas/AuditDTO'
     EventPagedResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Event'
+            $ref: '#/components/schemas/EventResponse'
         meta:
           $ref: '#/components/schemas/PagedMeta'
     
     # --- PERSONS ---
 
-    Person:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        first_name:
-          type: string
-        last_name:
-          type: string
-        email:
-          type: string
-        avatar_url:
-          type: string
-        github_user:
-          type: string
-        linkedin_url:
-          type: string
-        twitter_url:
-          type: string
-        website_url:
-          type: string
-        created_by:
-          type: string
-          format: uuid
-        updated_by:
-          type: string
-          format: uuid
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-    CreatePersonDTO:
-      type: object
-      required:
-        - first_name
-        - last_name
-      properties:
-        first_name:
-          type: string
-        last_name:
-          type: string
-        email:
-          type: string
-        avatar_url:
-          type: string
-        github_user:
-          type: string
-        linkedin_url:
-          type: string
-        twitter_url:
-          type: string
-        website_url:
-          type: string
     UpdatePersonDTO:
-      type: object
-      properties:
-        first_name:
-          type: string
-        last_name:
-          type: string
-        email:
-          type: string
-        avatar_url:
-          type: string
-        github_user:
-          type: string
-        linkedin_url:
-          type: string
-        twitter_url:
-          type: string
-        website_url:
-          type: string
+      allOf:
+      - $ref: '#/components/schemas/PersonFieldsDTO'
+    CreatePersonDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdatePersonDTO'
+      - type: object
+        required: [first_name, last_name]
+    PersonResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/PersonFieldsDTO'
+        - $ref: '#/components/schemas/AuditDTO'
     PersonPagedResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Person'
+            $ref: '#/components/schemas/PersonResponse'
+        meta:
+          $ref: '#/components/schemas/PagedMeta'
+    
+    # --- COLLABORATORS ---
+
+    UpdateCollaboratorDTO:
+      type: object
+      properties:
+        area:
+          type: string
+    CreateCollaboratorDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateCollaboratorDTO'
+      - $ref: '#/components/schemas/PersonAndEventFieldsDTO'
+      - type: object
+        required: [person_id, event_id]
+    CollaboratorResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateCollaboratorDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+    CollaboratorDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/CollaboratorResponse'
+        - $ref: '#/components/schemas/PersonFieldsDTO'
+    CollaboratorPagedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollaboratorDetailResponse'
+        meta:
+          $ref: '#/components/schemas/PagedMeta'
+    
+    # --- DEVELOPERS ---
+
+    UpdateDeveloperDTO:
+      type: object
+      properties:
+        role_description:
+          type: string
+    CreateDeveloperDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateDeveloperDTO'
+      - $ref: '#/components/schemas/PersonAndEventFieldsDTO'
+      - type: object
+        required: [person_id, event_id]
+    DeveloperResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateDeveloperDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+    DeveloperDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/DeveloperResponse'
+        - $ref: '#/components/schemas/PersonFieldsDTO'
+    DeveloperPagedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeveloperDetailResponse'
+        meta:
+          $ref: '#/components/schemas/PagedMeta'
+
+    # --- ORGANIZERS ---
+
+    UpdateOrganizerDTO:
+      type: object
+      properties:
+        company:
+          type: string
+        role_description:
+          type: string
+    CreateOrganizerDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateOrganizerDTO'
+      - $ref: '#/components/schemas/PersonAndEventFieldsDTO'
+      - type: object
+        required: [person_id, event_id]
+    OrganizerResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateOrganizerDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+    OrganizerDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/OrganizerResponse'
+        - $ref: '#/components/schemas/PersonFieldsDTO'
+    OrganizerPagedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerDetailResponse'
+        meta:
+          $ref: '#/components/schemas/PagedMeta'
+
+    # --- SPEAKERS ---
+
+    UpdateSpeakerDTO:
+      type: object
+      properties:
+        bio:
+          type: string
+        company:
+          type: string
+    CreateSpeakerDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateSpeakerDTO'
+      - $ref: '#/components/schemas/PersonAndEventFieldsDTO'
+      - type: object
+        required: [person_id, event_id]
+    SpeakerResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateSpeakerDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+    SpeakerDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/SpeakerResponse'
+        - $ref: '#/components/schemas/PersonFieldsDTO'
+    SpeakerPagedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeakerDetailResponse'
         meta:
           $ref: '#/components/schemas/PagedMeta'
 
