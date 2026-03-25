@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -29,17 +27,7 @@ type UpdatePersonDTO struct {
 }
 
 type PersonResponse struct {
-	ID          uuid.UUID `json:"id"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	Email       *string   `json:"email"`
-	AvatarURL   *string   `json:"avatar_url"`
-	GithubUser  *string   `json:"github_user"`
-	LinkedinURL *string   `json:"linkedin_url"`
-	TwitterURL  *string   `json:"twitter_url"`
-	WebsiteURL  *string   `json:"website_url"`
-	CreatedBy   uuid.UUID `json:"created_by"`
-	UpdatedBy   uuid.UUID `json:"updated_by"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID uuid.UUID `json:"id"`
+	PersonFieldsDTO
+	AuditDTO
 }

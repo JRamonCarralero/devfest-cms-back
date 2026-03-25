@@ -193,36 +193,41 @@ func (s *SpeakerHandler) Delete(ctx *gin.Context) {
 
 func mapToSpeakerResponse(speaker *domain.Speaker) dtos.SpeakerResponse {
 	return dtos.SpeakerResponse{
-		ID:        speaker.ID,
-		EventID:   speaker.EventID,
-		PersonID:  speaker.Person.ID,
-		Company:   utils.SafeString(speaker.Company),
-		Bio:       utils.SafeString(speaker.Bio),
-		CreatedAt: speaker.Audit.CreatedAt,
-		UpdatedAt: speaker.Audit.UpdatedAt,
-		CreatedBy: speaker.Audit.CreatedBy,
-		UpdatedBy: speaker.Audit.UpdatedBy,
+		ID:       speaker.ID,
+		EventID:  speaker.EventID,
+		PersonID: speaker.Person.ID,
+		Company:  utils.SafeString(speaker.Company),
+		Bio:      utils.SafeString(speaker.Bio),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: speaker.Audit.CreatedAt,
+			UpdatedAt: speaker.Audit.UpdatedAt,
+			CreatedBy: speaker.Audit.CreatedBy,
+			UpdatedBy: speaker.Audit.UpdatedBy,
+		},
 	}
 }
 
 func mapToSpeakerDetailResponse(speaker *domain.Speaker) dtos.SpeakerDetailResponse {
 	return dtos.SpeakerDetailResponse{
-		ID:          speaker.ID,
-		EventID:     speaker.EventID,
-		PersonID:    speaker.Person.ID,
-		Company:     utils.SafeString(speaker.Company),
-		Bio:         utils.SafeString(speaker.Bio),
-		CreatedAt:   speaker.Audit.CreatedAt,
-		UpdatedAt:   speaker.Audit.UpdatedAt,
-		CreatedBy:   speaker.Audit.CreatedBy,
-		UpdatedBy:   speaker.Audit.UpdatedBy,
-		FirstName:   speaker.Person.FirstName,
-		LastName:    speaker.Person.LastName,
-		Email:       utils.SafeString(speaker.Person.Email),
-		AvatarUrl:   utils.SafeString(speaker.Person.AvatarURL),
-		GithubUser:  utils.SafeString(speaker.Person.GithubUser),
-		TwitterUrl:  utils.SafeString(speaker.Person.TwitterURL),
-		LinkedinUrl: utils.SafeString(speaker.Person.LinkedinURL),
-		WebsiteUrl:  utils.SafeString(speaker.Person.WebsiteURL),
+		ID:       speaker.ID,
+		EventID:  speaker.EventID,
+		PersonID: speaker.Person.ID,
+		Company:  utils.SafeString(speaker.Company),
+		Bio:      utils.SafeString(speaker.Bio),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: speaker.Audit.CreatedAt,
+			UpdatedAt: speaker.Audit.UpdatedAt,
+			CreatedBy: speaker.Audit.CreatedBy,
+			UpdatedBy: speaker.Audit.UpdatedBy,
+		},
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   speaker.Person.FirstName,
+			LastName:    speaker.Person.LastName,
+			Email:       utils.SafeString(speaker.Person.Email),
+			AvatarURL:   utils.SafeString(speaker.Person.AvatarURL),
+			GithubUser:  utils.SafeString(speaker.Person.GithubUser),
+			TwitterURL:  utils.SafeString(speaker.Person.TwitterURL),
+			LinkedinURL: utils.SafeString(speaker.Person.LinkedinURL),
+			WebsiteURL:  utils.SafeString(speaker.Person.WebsiteURL)},
 	}
 }

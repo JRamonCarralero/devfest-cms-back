@@ -1,8 +1,6 @@
 package dtos
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -19,33 +17,20 @@ type UpdateSpeakerDTO struct {
 }
 
 type SpeakerDetailResponse struct {
-	ID          uuid.UUID `json:"id"`
-	EventID     uuid.UUID `json:"event_id"`
-	PersonID    uuid.UUID `json:"person_id"`
-	Bio         string    `json:"bio"`
-	Company     string    `json:"company"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	Email       string    `json:"email"`
-	AvatarUrl   string    `json:"avatar_url"`
-	GithubUser  string    `json:"github_user"`
-	TwitterUrl  string    `json:"twitter_url"`
-	LinkedinUrl string    `json:"linkedin_url"`
-	WebsiteUrl  string    `json:"website_url"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	CreatedBy   uuid.UUID `json:"created_by"`
-	UpdatedBy   uuid.UUID `json:"updated_by"`
+	ID       uuid.UUID `json:"id"`
+	EventID  uuid.UUID `json:"event_id"`
+	PersonID uuid.UUID `json:"person_id"`
+	Bio      string    `json:"bio"`
+	Company  string    `json:"company"`
+	PersonFieldsDTO
+	AuditDTO
 }
 
 type SpeakerResponse struct {
-	ID        uuid.UUID `json:"id"`
-	EventID   uuid.UUID `json:"event_id"`
-	PersonID  uuid.UUID `json:"person_id"`
-	Bio       string    `json:"bio"`
-	Company   string    `json:"company"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedBy uuid.UUID `json:"created_by"`
-	UpdatedBy uuid.UUID `json:"updated_by"`
+	ID       uuid.UUID `json:"id"`
+	EventID  uuid.UUID `json:"event_id"`
+	PersonID uuid.UUID `json:"person_id"`
+	Bio      string    `json:"bio"`
+	Company  string    `json:"company"`
+	AuditDTO
 }

@@ -198,10 +198,12 @@ func mapToOrganizerResponse(organizer *domain.Organizer) dtos.OrganizerResponse 
 		PersonID:        organizer.Person.ID,
 		Company:         utils.SafeString(organizer.Company),
 		RoleDescription: utils.SafeString(organizer.RoleDescription),
-		CreatedAt:       organizer.CreatedAt,
-		UpdatedAt:       organizer.UpdatedAt,
-		CreatedBy:       organizer.CreatedBy,
-		UpdatedBy:       organizer.UpdatedBy,
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: organizer.CreatedAt,
+			UpdatedAt: organizer.UpdatedAt,
+			CreatedBy: organizer.CreatedBy,
+			UpdatedBy: organizer.UpdatedBy,
+		},
 	}
 }
 
@@ -212,17 +214,21 @@ func mapToOrganizerDetailResponse(organizer *domain.Organizer) dtos.OrganizerDet
 		PersonID:        organizer.Person.ID,
 		Company:         utils.SafeString(organizer.Company),
 		RoleDescription: utils.SafeString(organizer.RoleDescription),
-		CreatedAt:       organizer.CreatedAt,
-		UpdatedAt:       organizer.UpdatedAt,
-		CreatedBy:       organizer.CreatedBy,
-		UpdatedBy:       organizer.UpdatedBy,
-		FirstName:       organizer.Person.FirstName,
-		LastName:        organizer.Person.LastName,
-		Email:           utils.SafeString(organizer.Person.Email),
-		AvatarUrl:       utils.SafeString(organizer.Person.AvatarURL),
-		GithubUser:      utils.SafeString(organizer.Person.GithubUser),
-		TwitterUrl:      utils.SafeString(organizer.Person.TwitterURL),
-		LinkedinUrl:     utils.SafeString(organizer.Person.LinkedinURL),
-		WebsiteUrl:      utils.SafeString(organizer.Person.WebsiteURL),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: organizer.CreatedAt,
+			UpdatedAt: organizer.UpdatedAt,
+			CreatedBy: organizer.CreatedBy,
+			UpdatedBy: organizer.UpdatedBy,
+		},
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   organizer.Person.FirstName,
+			LastName:    organizer.Person.LastName,
+			Email:       utils.SafeString(organizer.Person.Email),
+			AvatarURL:   utils.SafeString(organizer.Person.AvatarURL),
+			GithubUser:  utils.SafeString(organizer.Person.GithubUser),
+			TwitterURL:  utils.SafeString(organizer.Person.TwitterURL),
+			LinkedinURL: utils.SafeString(organizer.Person.LinkedinURL),
+			WebsiteURL:  utils.SafeString(organizer.Person.WebsiteURL),
+		},
 	}
 }

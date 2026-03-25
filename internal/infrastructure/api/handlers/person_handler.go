@@ -212,16 +212,22 @@ func (h *PersonHandler) Delete(ctx *gin.Context) {
 
 func mapToDTOPersonResponse(person domain.Person) dtos.PersonResponse {
 	return dtos.PersonResponse{
-		ID:          person.ID,
-		FirstName:   person.FirstName,
-		LastName:    person.LastName,
-		Email:       person.Email,
-		AvatarURL:   person.AvatarURL,
-		GithubUser:  person.GithubUser,
-		LinkedinURL: person.LinkedinURL,
-		TwitterURL:  person.TwitterURL,
-		WebsiteURL:  person.WebsiteURL,
-		CreatedAt:   person.Audit.CreatedAt,
-		UpdatedAt:   person.Audit.UpdatedAt,
+		ID: person.ID,
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   person.FirstName,
+			LastName:    person.LastName,
+			Email:       utils.SafeString(person.Email),
+			AvatarURL:   utils.SafeString(person.AvatarURL),
+			GithubUser:  utils.SafeString(person.GithubUser),
+			LinkedinURL: utils.SafeString(person.LinkedinURL),
+			TwitterURL:  utils.SafeString(person.TwitterURL),
+			WebsiteURL:  utils.SafeString(person.WebsiteURL),
+		},
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: person.Audit.CreatedAt,
+			CreatedBy: person.Audit.CreatedBy,
+			UpdatedAt: person.Audit.UpdatedAt,
+			UpdatedBy: person.Audit.UpdatedBy,
+		},
 	}
 }

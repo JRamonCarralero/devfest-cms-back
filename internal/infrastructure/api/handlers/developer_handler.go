@@ -195,10 +195,12 @@ func mapToDeveloperResponse(d *domain.Developer) dtos.DeveloperResponse {
 		EventID:         d.EventID,
 		PersonID:        d.Person.ID,
 		RoleDescription: utils.SafeString(d.RoleDescription),
-		CreatedAt:       d.CreatedAt,
-		UpdatedAt:       d.UpdatedAt,
-		CreatedBy:       d.CreatedBy,
-		UpdatedBy:       d.UpdatedBy,
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: d.CreatedAt,
+			UpdatedAt: d.UpdatedAt,
+			CreatedBy: d.CreatedBy,
+			UpdatedBy: d.UpdatedBy,
+		},
 	}
 }
 
@@ -207,17 +209,21 @@ func mapToDeveloperDetailResponse(d *domain.Developer) dtos.DeveloperDetailRespo
 		ID:              d.ID,
 		EventID:         d.EventID,
 		RoleDescription: utils.SafeString(d.RoleDescription),
-		CreatedAt:       d.CreatedAt,
-		UpdatedAt:       d.UpdatedAt,
-		CreatedBy:       d.CreatedBy,
-		UpdatedBy:       d.UpdatedBy,
-		FirstName:       d.Person.FirstName,
-		LastName:        d.Person.LastName,
-		Email:           utils.SafeString(d.Person.Email),
-		AvatarUrl:       utils.SafeString(d.Person.AvatarURL),
-		GithubUser:      utils.SafeString(d.Person.GithubUser),
-		TwitterUrl:      utils.SafeString(d.Person.TwitterURL),
-		LinkedinUrl:     utils.SafeString(d.Person.LinkedinURL),
-		WebsiteUrl:      utils.SafeString(d.Person.WebsiteURL),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: d.CreatedAt,
+			UpdatedAt: d.UpdatedAt,
+			CreatedBy: d.CreatedBy,
+			UpdatedBy: d.UpdatedBy,
+		},
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   d.Person.FirstName,
+			LastName:    d.Person.LastName,
+			Email:       utils.SafeString(d.Person.Email),
+			AvatarURL:   utils.SafeString(d.Person.AvatarURL),
+			GithubUser:  utils.SafeString(d.Person.GithubUser),
+			TwitterURL:  utils.SafeString(d.Person.TwitterURL),
+			LinkedinURL: utils.SafeString(d.Person.LinkedinURL),
+			WebsiteURL:  utils.SafeString(d.Person.WebsiteURL),
+		},
 	}
 }

@@ -191,34 +191,40 @@ func (ch *CollaboratorHandler) Delete(ctx *gin.Context) {
 
 func mapToCollaboratorResponse(c *domain.Collaborator) dtos.CollaboratorResponse {
 	return dtos.CollaboratorResponse{
-		ID:        c.ID,
-		PersonID:  c.Person.ID,
-		EventID:   c.EventID,
-		Area:      utils.SafeString(c.Area),
-		CreatedAt: c.CreatedAt,
-		UpdatedAt: c.UpdatedAt,
-		CreatedBy: c.CreatedBy,
-		UpdatedBy: c.UpdatedBy,
+		ID:       c.ID,
+		PersonID: c.Person.ID,
+		EventID:  c.EventID,
+		Area:     utils.SafeString(c.Area),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: c.CreatedAt,
+			UpdatedAt: c.UpdatedAt,
+			CreatedBy: c.CreatedBy,
+			UpdatedBy: c.UpdatedBy,
+		},
 	}
 }
 
 func mapToCollaboratorDetailResponse(c *domain.Collaborator) dtos.CollaboratorDetailResponse {
 	return dtos.CollaboratorDetailResponse{
-		ID:          c.ID,
-		PersonID:    c.Person.ID,
-		EventID:     c.EventID,
-		Area:        utils.SafeString(c.Area),
-		CreatedAt:   c.CreatedAt,
-		UpdatedAt:   c.UpdatedAt,
-		CreatedBy:   c.CreatedBy,
-		UpdatedBy:   c.UpdatedBy,
-		FirstName:   c.Person.FirstName,
-		LastName:    c.Person.LastName,
-		Email:       utils.SafeString(c.Person.Email),
-		AvatarUrl:   utils.SafeString(c.Person.AvatarURL),
-		GithubUser:  utils.SafeString(c.Person.GithubUser),
-		TwitterUrl:  utils.SafeString(c.Person.TwitterURL),
-		LinkedinUrl: utils.SafeString(c.Person.LinkedinURL),
-		WebsiteUrl:  utils.SafeString(c.Person.WebsiteURL),
+		ID:       c.ID,
+		PersonID: c.Person.ID,
+		EventID:  c.EventID,
+		Area:     utils.SafeString(c.Area),
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: c.CreatedAt,
+			UpdatedAt: c.UpdatedAt,
+			CreatedBy: c.CreatedBy,
+			UpdatedBy: c.UpdatedBy,
+		},
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   c.Person.FirstName,
+			LastName:    c.Person.LastName,
+			Email:       utils.SafeString(c.Person.Email),
+			AvatarURL:   utils.SafeString(c.Person.AvatarURL),
+			GithubUser:  utils.SafeString(c.Person.GithubUser),
+			TwitterURL:  utils.SafeString(c.Person.TwitterURL),
+			LinkedinURL: utils.SafeString(c.Person.LinkedinURL),
+			WebsiteURL:  utils.SafeString(c.Person.WebsiteURL),
+		},
 	}
 }
