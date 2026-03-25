@@ -5,10 +5,10 @@ import (
 )
 
 type CreateSpeakerDTO struct {
-	PersonID uuid.UUID `json:"person_id" validate:"required"`
-	EventID  uuid.UUID `json:"event_id" validate:"required"`
-	Bio      *string   `json:"bio" validate:"required"`
-	Company  *string   `json:"company" validate:"required"`
+	PersonID uuid.UUID `json:"person_id" binding:"required"`
+	EventID  uuid.UUID `json:"event_id" binding:"required"`
+	Bio      *string   `json:"bio"`
+	Company  *string   `json:"company"`
 }
 
 type UpdateSpeakerDTO struct {

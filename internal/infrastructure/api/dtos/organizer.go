@@ -5,8 +5,8 @@ import (
 )
 
 type CreateOrganizerDTO struct {
-	EventID         uuid.UUID `json:"event_id"`
-	PersonID        uuid.UUID `json:"person_id"`
+	EventID         uuid.UUID `json:"event_id" binding:"required"`
+	PersonID        uuid.UUID `json:"person_id" binding:"required"`
 	Company         *string   `json:"company"`
 	RoleDescription *string   `json:"role_description"`
 }
