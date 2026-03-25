@@ -228,6 +228,7 @@ func mapToSpeakerDetailResponse(speaker *domain.Speaker) dtos.SpeakerDetailRespo
 			GithubUser:  utils.SafeString(speaker.Person.GithubUser),
 			TwitterURL:  utils.SafeString(speaker.Person.TwitterURL),
 			LinkedinURL: utils.SafeString(speaker.Person.LinkedinURL),
-			WebsiteURL:  utils.SafeString(speaker.Person.WebsiteURL)},
+			WebsiteURL:  utils.SafeString(speaker.Person.WebsiteURL),
+		},
 	}
 }
