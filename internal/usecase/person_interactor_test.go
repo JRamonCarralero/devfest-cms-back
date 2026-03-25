@@ -4,7 +4,6 @@ import (
 	"context"
 	"devfest/internal/domain"
 	"devfest/internal/domain/mocks"
-	"devfest/internal/infrastructure/api/dtos"
 	"devfest/internal/usecase"
 	"testing"
 
@@ -20,11 +19,15 @@ func TestPersonInteractor_Create(t *testing.T) {
 
 	t.Run("Should create person successfully", func(t *testing.T) {
 		email := "test@test.com"
-		dto := dtos.CreatePersonDTO{
+		userId := uuid.New()
+		dto := domain.Person{
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     &email,
-			CreatedBy: uuid.New(),
+			Audit: domain.Audit{
+				CreatedBy: userId,
+				UpdatedBy: userId,
+			},
 		}
 
 		mockRepo.On("Create", ctx, mock.AnythingOfType("*domain.Person")).
@@ -35,7 +38,7 @@ func TestPersonInteractor_Create(t *testing.T) {
 				Email:     dto.Email,
 			}, nil).Once()
 
-		result, err := interactor.Create(ctx, dto)
+		result, err := interactor.Create(ctx, &dto)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -72,7 +75,7 @@ func TestPersonInteractor_Update(t *testing.T) {
 		}
 
 		newName := "NewName"
-		dto := dtos.UpdatePersonDTO{
+		dto := domain.UpdatePerson{
 			FirstName: &newName,
 			UpdatedBy: uuid.New(),
 		}
@@ -82,7 +85,7 @@ func TestPersonInteractor_Update(t *testing.T) {
 			return p.FirstName == newName && p.LastName == "OldLastName"
 		})).Return(existing, nil).Once()
 
-		_, err := interactor.Update(ctx, personID, dto)
+		_, err := interactor.Update(ctx, personID, &dto)
 
 		assert.NoError(t, err)
 		mockRepo.AssertExpectations(t)
@@ -156,11 +159,11 @@ func TestPersonInteractor_Update_Errors(t *testing.T) {
 	id := uuid.New()
 
 	t.Run("Should return error if person not found", func(t *testing.T) {
-		dto := dtos.UpdatePersonDTO{}
+		dto := domain.UpdatePerson{}
 		mockRepo.On("GetById", ctx, id).
 			Return(nil, domain.NewAppError(domain.TypeNotFound, "not found", nil)).Once()
 
-		result, err := interactor.Update(ctx, id, dto)
+		result, err := interactor.Update(ctx, id, &dto)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -168,13 +171,13 @@ func TestPersonInteractor_Update_Errors(t *testing.T) {
 
 	t.Run("Should return error if repository update fails", func(t *testing.T) {
 		existing := &domain.Person{ID: id}
-		dto := dtos.UpdatePersonDTO{}
+		dto := domain.UpdatePerson{}
 
 		mockRepo.On("GetById", ctx, id).Return(existing, nil).Once()
 		mockRepo.On("Update", ctx, mock.Anything).
 			Return(nil, domain.NewAppError(domain.TypeInternal, "db error", nil)).Once()
 
-		_, err := interactor.Update(ctx, id, dto)
+		_, err := interactor.Update(ctx, id, &dto)
 
 		assert.Error(t, err)
 	})

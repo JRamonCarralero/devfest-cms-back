@@ -26,7 +26,7 @@ RETURNING *;
 -- name: GetOrganizerByID :one
 SELECT 
   c.*, 
-  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM organizers c
 JOIN persons p ON c.person_id = p.id
 WHERE c.id = $1 LIMIT 1;
@@ -34,7 +34,7 @@ WHERE c.id = $1 LIMIT 1;
 -- name: ListOrganizersByEvent :many
 SELECT 
   c.*, 
-  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM organizers c
 JOIN persons p ON c.person_id = p.id
 WHERE c.event_id = $1;
@@ -42,7 +42,7 @@ WHERE c.event_id = $1;
 -- name: ListOrganizersByEventPaged :many
 SELECT 
   c.*, 
-  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+  p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM organizers c
 JOIN persons p ON c.person_id = p.id
 WHERE c.event_id = $1 

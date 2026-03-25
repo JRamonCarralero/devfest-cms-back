@@ -5,14 +5,28 @@ import (
 )
 
 type CreateCollaboratorDTO struct {
-	PersonID  uuid.UUID `json:"person_id" binding:"required"`
-	EventID   uuid.UUID `json:"event_id" binding:"required"`
-	Area      *string   `json:"area" binding:"required"`
-	CreatedBy uuid.UUID `json:"-"`
+	PersonID uuid.UUID `json:"person_id" binding:"required"`
+	EventID  uuid.UUID `json:"event_id" binding:"required"`
+	Area     *string   `json:"area"`
 }
 
 type UpdateCollaboratorDTO struct {
-	Area      *string    `json:"area" binding:"omitempty"`
-	PersonID  *uuid.UUID `json:"person_id" binding:"omitempty"`
-	UpdatedBy uuid.UUID  `json:"-"`
+	Area *string `json:"area" binding:"omitempty"`
+}
+
+type CollaboratorDetailResponse struct {
+	ID       uuid.UUID `json:"id"`
+	PersonID uuid.UUID `json:"person_id"`
+	EventID  uuid.UUID `json:"event_id"`
+	Area     string    `json:"area"`
+	AuditDTO
+	PersonFieldsDTO
+}
+
+type CollaboratorResponse struct {
+	ID       uuid.UUID `json:"id"`
+	PersonID uuid.UUID `json:"person_id"`
+	EventID  uuid.UUID `json:"event_id"`
+	Area     string    `json:"area"`
+	AuditDTO
 }

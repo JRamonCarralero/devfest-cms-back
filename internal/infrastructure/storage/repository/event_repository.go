@@ -3,24 +3,25 @@ package repository
 import (
 	"context"
 	"devfest/internal/domain"
+	"devfest/internal/infrastructure/api/utils"
 	"devfest/internal/infrastructure/storage/dbgen"
 
 	"github.com/google/uuid"
 )
 
-type PostgresEventRepository struct {
+type EventRepository struct {
 	queries *dbgen.Queries
 }
 
-// NewPostgresEventRepository returns a new PostgresEventRepository
-func NewPostgresEventRepository(queries *dbgen.Queries) *PostgresEventRepository {
-	return &PostgresEventRepository{queries: queries}
+// NewEventRepository returns a new EventRepository
+func NewEventRepository(queries *dbgen.Queries) *EventRepository {
+	return &EventRepository{queries: queries}
 }
 
 // --- READERS ---
 
 // GetAll returns all Events
-func (r *PostgresEventRepository) GetAll(ctx context.Context) ([]domain.Event, error) {
+func (r *EventRepository) GetAll(ctx context.Context) ([]domain.Event, error) {
 	rows, err := r.queries.ListEvents(ctx)
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
@@ -35,7 +36,7 @@ func (r *PostgresEventRepository) GetAll(ctx context.Context) ([]domain.Event, e
 }
 
 // GetById returns an Event by its ID
-func (r *PostgresEventRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
+func (r *EventRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Event, error) {
 	row, err := r.queries.GetEventByID(ctx, id)
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
@@ -45,7 +46,7 @@ func (r *PostgresEventRepository) GetByID(ctx context.Context, id uuid.UUID) (*d
 }
 
 // GetBySlug returns an Event by its slug
-func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*domain.Event, error) {
+func (r *EventRepository) GetBySlug(ctx context.Context, slug string) (*domain.Event, error) {
 	row, err := r.queries.GetEventBySlug(ctx, slug)
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
@@ -55,7 +56,7 @@ func (r *PostgresEventRepository) GetBySlug(ctx context.Context, slug string) (*
 }
 
 // GetActive returns all active Events
-func (r *PostgresEventRepository) GetActiveList(ctx context.Context) ([]domain.Event, error) {
+func (r *EventRepository) GetActiveList(ctx context.Context) ([]domain.Event, error) {
 	rows, err := r.queries.ListActiveEvents(ctx)
 	if err != nil {
 		return nil, ParseDBError(err, "Event")
@@ -70,7 +71,7 @@ func (r *PostgresEventRepository) GetActiveList(ctx context.Context) ([]domain.E
 }
 
 // ListPaged returns a page of Events
-func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]domain.Event, int64, error) {
+func (r *EventRepository) ListPaged(ctx context.Context, search string, page, pageSize int32, orderBy string) ([]domain.Event, int64, error) {
 	offset := (page - 1) * pageSize
 
 	total, err := r.queries.CountEvents(ctx, search)
@@ -99,11 +100,11 @@ func (r *PostgresEventRepository) ListPaged(ctx context.Context, search string, 
 // --- WRITERS ---
 
 // create inserts a new Event
-func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Event) (*domain.Event, error) {
+func (r *EventRepository) Create(ctx context.Context, event *domain.Event) (*domain.Event, error) {
 	params := dbgen.CreateEventParams{
 		Name:      event.Name,
 		Slug:      event.Slug,
-		IsActive:  ToPgBool(event.IsActive),
+		IsActive:  utils.ToPgBool(event.IsActive),
 		CreatedBy: event.CreatedBy,
 	}
 
@@ -115,12 +116,12 @@ func (r *PostgresEventRepository) Create(ctx context.Context, event *domain.Even
 }
 
 // Update updates an Event
-func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Event) (*domain.Event, error) {
+func (r *EventRepository) Update(ctx context.Context, event *domain.Event) (*domain.Event, error) {
 	params := dbgen.UpdateEventParams{
 		ID:        event.ID,
 		Name:      event.Name,
 		Slug:      event.Slug,
-		IsActive:  ToPgBool(event.IsActive),
+		IsActive:  utils.ToPgBool(event.IsActive),
 		UpdatedBy: event.Audit.UpdatedBy,
 	}
 
@@ -132,7 +133,7 @@ func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Even
 }
 
 // Delete deletes an Event
-func (r *PostgresEventRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *EventRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteEvent(ctx, id)
 	if err != nil {
 		return ParseDBError(err, "Event")

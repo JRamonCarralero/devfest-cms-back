@@ -27,7 +27,17 @@ func (h *PersonHandler) GetAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, people)
+	if len(people) == 0 {
+		ctx.Status(http.StatusNoContent)
+		return
+	}
+
+	peopleResponse := make([]dtos.PersonResponse, len(people))
+	for i, person := range people {
+		peopleResponse[i] = mapToDTOPersonResponse(person)
+	}
+
+	ctx.JSON(http.StatusOK, peopleResponse)
 }
 
 // GetByID
@@ -45,7 +55,9 @@ func (h *PersonHandler) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, person)
+	personResponse := mapToDTOPersonResponse(*person)
+
+	ctx.JSON(http.StatusOK, personResponse)
 }
 
 // GetByEmail
@@ -58,13 +70,14 @@ func (h *PersonHandler) GetByEmail(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, person)
+	personResponse := mapToDTOPersonResponse(*person)
+
+	ctx.JSON(http.StatusOK, personResponse)
 }
 
 // GetPaged
 func (h *PersonHandler) GetPaged(ctx *gin.Context) {
 	search := ctx.DefaultQuery("search", "")
-
 	page, pageSize := utils.GetPaginationParams(ctx)
 	if pageSize > 100 {
 		pageSize = 100
@@ -76,8 +89,13 @@ func (h *PersonHandler) GetPaged(ctx *gin.Context) {
 		return
 	}
 
-	res := dtos.PagedResponse[domain.Person]{
-		Data: people,
+	peopleResponse := make([]dtos.PersonResponse, len(people))
+	for i, person := range people {
+		peopleResponse[i] = mapToDTOPersonResponse(person)
+	}
+
+	res := dtos.PagedResponse[dtos.PersonResponse]{
+		Data: peopleResponse,
 		Meta: dtos.PagedMeta{
 			Total:    total,
 			Page:     int32(page),
@@ -102,15 +120,31 @@ func (h *PersonHandler) Create(ctx *gin.Context) {
 		response.HandleError(ctx, err)
 		return
 	}
-	dto.CreatedBy = uid
 
-	person, err := h.usecase.Create(ctx.Request.Context(), dto)
+	person := domain.Person{
+		FirstName:   dto.FirstName,
+		LastName:    dto.LastName,
+		Email:       dto.Email,
+		AvatarURL:   dto.AvatarURL,
+		GithubUser:  dto.GithubUser,
+		LinkedinURL: dto.LinkedinURL,
+		TwitterURL:  dto.TwitterURL,
+		WebsiteURL:  dto.WebsiteURL,
+		Audit: domain.Audit{
+			CreatedBy: uid,
+			UpdatedBy: uid,
+		},
+	}
+
+	newPerson, err := h.usecase.Create(ctx.Request.Context(), &person)
 	if err != nil {
 		response.HandleError(ctx, err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, person)
+	personResponse := mapToDTOPersonResponse(*newPerson)
+
+	ctx.JSON(http.StatusCreated, personResponse)
 }
 
 // Update
@@ -134,15 +168,28 @@ func (h *PersonHandler) Update(ctx *gin.Context) {
 		response.HandleError(ctx, err)
 		return
 	}
-	dto.UpdatedBy = uid
 
-	person, err := h.usecase.Update(ctx.Request.Context(), id, dto)
+	upPerson := domain.UpdatePerson{
+		FirstName:   dto.FirstName,
+		LastName:    dto.LastName,
+		Email:       dto.Email,
+		AvatarURL:   dto.AvatarURL,
+		GithubUser:  dto.GithubUser,
+		LinkedinURL: dto.LinkedinURL,
+		TwitterURL:  dto.TwitterURL,
+		WebsiteURL:  dto.WebsiteURL,
+		UpdatedBy:   uid,
+	}
+
+	person, err := h.usecase.Update(ctx.Request.Context(), id, &upPerson)
 	if err != nil {
 		response.HandleError(ctx, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, person)
+	personResponse := mapToDTOPersonResponse(*person)
+
+	ctx.JSON(http.StatusOK, personResponse)
 }
 
 // Delete
@@ -161,4 +208,26 @@ func (h *PersonHandler) Delete(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusNoContent)
+}
+
+func mapToDTOPersonResponse(person domain.Person) dtos.PersonResponse {
+	return dtos.PersonResponse{
+		ID: person.ID,
+		PersonFieldsDTO: dtos.PersonFieldsDTO{
+			FirstName:   person.FirstName,
+			LastName:    person.LastName,
+			Email:       utils.SafeString(person.Email),
+			AvatarURL:   utils.SafeString(person.AvatarURL),
+			GithubUser:  utils.SafeString(person.GithubUser),
+			LinkedinURL: utils.SafeString(person.LinkedinURL),
+			TwitterURL:  utils.SafeString(person.TwitterURL),
+			WebsiteURL:  utils.SafeString(person.WebsiteURL),
+		},
+		AuditDTO: dtos.AuditDTO{
+			CreatedAt: person.Audit.CreatedAt,
+			CreatedBy: person.Audit.CreatedBy,
+			UpdatedAt: person.Audit.UpdatedAt,
+			UpdatedBy: person.Audit.UpdatedBy,
+		},
+	}
 }

@@ -143,6 +143,10 @@ The project uses the **OpenAPI 3.0 (Swagger)** specification to document all end
 | :--- | :--- |
 | **Events** | CRUD, automatic auditing, and filtering. |
 | **Persons** | Profiles for speakers/organizers/developers, social links, and paged search. |
+| **Collaborators** | CRUD, automatic auditing, and filtering. |
+| **Developers** | CRUD, automatic auditing, and filtering. |
+| **Organizers** | CRUD, automatic auditing, and filtering. |
+| **Speakers** | CRUD, automatic auditing, and filtering. |
 
 ## 🤝 Contribution
 

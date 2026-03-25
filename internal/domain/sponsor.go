@@ -12,3 +12,11 @@ type Sponsor struct {
 	OrderPriority *int
 	Audit
 }
+
+type UpdateSponsor struct {
+	Name       *string
+	LogoURL    *string
+	WebsiteURL *string
+	Tier       *int
+	UpdatedBy  uuid.UUID
+}

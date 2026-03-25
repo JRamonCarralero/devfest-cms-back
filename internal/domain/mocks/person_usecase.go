@@ -5,7 +5,6 @@ package mocks
 import (
 	context "context"
 	domain "devfest/internal/domain"
-	dtos "devfest/internal/infrastructure/api/dtos"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -17,9 +16,9 @@ type PersonUsecase struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: ctx, dto
-func (_m *PersonUsecase) Create(ctx context.Context, dto dtos.CreatePersonDTO) (*domain.Person, error) {
-	ret := _m.Called(ctx, dto)
+// Create provides a mock function with given fields: ctx, person
+func (_m *PersonUsecase) Create(ctx context.Context, person *domain.Person) (*domain.Person, error) {
+	ret := _m.Called(ctx, person)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
@@ -27,19 +26,19 @@ func (_m *PersonUsecase) Create(ctx context.Context, dto dtos.CreatePersonDTO) (
 
 	var r0 *domain.Person
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, dtos.CreatePersonDTO) (*domain.Person, error)); ok {
-		return rf(ctx, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Person) (*domain.Person, error)); ok {
+		return rf(ctx, person)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, dtos.CreatePersonDTO) *domain.Person); ok {
-		r0 = rf(ctx, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Person) *domain.Person); ok {
+		r0 = rf(ctx, person)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Person)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, dtos.CreatePersonDTO) error); ok {
-		r1 = rf(ctx, dto)
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.Person) error); ok {
+		r1 = rf(ctx, person)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -192,9 +191,9 @@ func (_m *PersonUsecase) ListPaged(ctx context.Context, search string, page int3
 	return r0, r1, r2
 }
 
-// Update provides a mock function with given fields: ctx, id, dto
-func (_m *PersonUsecase) Update(ctx context.Context, id uuid.UUID, dto dtos.UpdatePersonDTO) (*domain.Person, error) {
-	ret := _m.Called(ctx, id, dto)
+// Update provides a mock function with given fields: ctx, id, upPerson
+func (_m *PersonUsecase) Update(ctx context.Context, id uuid.UUID, upPerson *domain.UpdatePerson) (*domain.Person, error) {
+	ret := _m.Called(ctx, id, upPerson)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
@@ -202,19 +201,19 @@ func (_m *PersonUsecase) Update(ctx context.Context, id uuid.UUID, dto dtos.Upda
 
 	var r0 *domain.Person
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, dtos.UpdatePersonDTO) (*domain.Person, error)); ok {
-		return rf(ctx, id, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *domain.UpdatePerson) (*domain.Person, error)); ok {
+		return rf(ctx, id, upPerson)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, dtos.UpdatePersonDTO) *domain.Person); ok {
-		r0 = rf(ctx, id, dto)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *domain.UpdatePerson) *domain.Person); ok {
+		r0 = rf(ctx, id, upPerson)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Person)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID, dtos.UpdatePersonDTO) error); ok {
-		r1 = rf(ctx, id, dto)
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID, *domain.UpdatePerson) error); ok {
+		r1 = rf(ctx, id, upPerson)
 	} else {
 		r1 = ret.Error(1)
 	}

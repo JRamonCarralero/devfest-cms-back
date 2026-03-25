@@ -25,7 +25,7 @@ RETURNING *;
 -- name: GetSpeakerByID :one
 SELECT 
     s.*, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.id = $1 LIMIT 1;
@@ -33,7 +33,7 @@ WHERE s.id = $1 LIMIT 1;
 -- name: ListSpeakersByEvent :many
 SELECT 
     s.*, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.event_id = $1;
@@ -41,7 +41,7 @@ WHERE s.event_id = $1;
 -- name: ListSpeakersByEventPaged :many
 SELECT 
     s.*, 
-    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url
+    p.first_name, p.last_name, p.email, p.avatar_url, p.github_user, p.twitter_url, p.linkedin_url, p.website_url
 FROM speakers s
 JOIN persons p ON s.person_id = p.id
 WHERE s.event_id = $1 

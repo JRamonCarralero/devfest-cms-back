@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"devfest/internal/domain"
-	"devfest/internal/infrastructure/api/dtos"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -82,22 +82,10 @@ func (i *eventInteractor) GetEventsPaged(ctx context.Context, search string, pag
 // --- Writers ---
 
 // CreateEvent creates a new Event
-func (i *eventInteractor) CreateEvent(ctx context.Context, dto dtos.CreateEventDTO) (*domain.Event, error) {
-	isActive := true
-	if dto.IsActive != nil {
-		isActive = *dto.IsActive
-	}
+func (i *eventInteractor) CreateEvent(ctx context.Context, event *domain.Event) (*domain.Event, error) {
+	event.Slug = strings.ToLower(strings.TrimSpace(event.Slug))
 
-	createdEvent, err := i.repo.Create(ctx, &domain.Event{
-		Name:     dto.Name,
-		Slug:     dto.Slug,
-		IsActive: &isActive,
-		Audit: domain.Audit{
-			CreatedBy: dto.CreatedBy,
-			UpdatedBy: dto.CreatedBy,
-		},
-	})
-
+	createdEvent, err := i.repo.Create(ctx, event)
 	if err != nil {
 		return nil, err
 	}
@@ -106,23 +94,23 @@ func (i *eventInteractor) CreateEvent(ctx context.Context, dto dtos.CreateEventD
 }
 
 // UpdateEvent validates params and updates an Event
-func (i *eventInteractor) UpdateEvent(ctx context.Context, id uuid.UUID, dto dtos.UpdateEventDTO) (*domain.Event, error) {
+func (i *eventInteractor) UpdateEvent(ctx context.Context, id uuid.UUID, evUpdate *domain.UpdateEvent) (*domain.Event, error) {
 	event, err := i.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if dto.Name != nil {
-		event.Name = *dto.Name
+	if evUpdate.Name != nil {
+		event.Name = *evUpdate.Name
 	}
-	if dto.Slug != nil {
-		event.Slug = *dto.Slug
+	if evUpdate.Slug != nil {
+		event.Slug = *evUpdate.Slug
 	}
-	if dto.IsActive != nil {
-		event.IsActive = dto.IsActive
+	if evUpdate.IsActive != nil {
+		event.IsActive = evUpdate.IsActive
 	}
 
-	event.Audit.UpdatedBy = dto.UpdatedBy
+	event.Audit.UpdatedBy = evUpdate.UpdatedBy
 
 	updatedEvent, err := i.repo.Update(ctx, event)
 	if err != nil {

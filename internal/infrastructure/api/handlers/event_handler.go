@@ -27,7 +27,17 @@ func (h *EventHandler) GetEvents(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, events)
+	if len(events) == 0 {
+		c.Status(http.StatusNoContent)
+		return
+	}
+
+	eventsResponse := make([]dtos.EventResponse, len(events))
+	for i, event := range events {
+		eventsResponse[i] = mapToDomainEventResponse(event)
+	}
+
+	c.JSON(http.StatusOK, eventsResponse)
 }
 
 // GetByID
@@ -45,7 +55,9 @@ func (h *EventHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	eventResponse := mapToDomainEventResponse(*event)
+
+	c.JSON(http.StatusOK, eventResponse)
 }
 
 // GetBySlug
@@ -58,7 +70,9 @@ func (h *EventHandler) GetBySlug(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	eventResponse := mapToDomainEventResponse(*event)
+
+	c.JSON(http.StatusOK, eventResponse)
 }
 
 // GetActive
@@ -69,7 +83,12 @@ func (h *EventHandler) GetActive(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, events)
+	eventsResponse := make([]dtos.EventResponse, len(events))
+	for i, event := range events {
+		eventsResponse[i] = mapToDomainEventResponse(event)
+	}
+
+	c.JSON(http.StatusOK, eventsResponse)
 }
 
 // GetPaged
@@ -88,8 +107,18 @@ func (h *EventHandler) GetPaged(c *gin.Context) {
 		return
 	}
 
-	res := dtos.PagedResponse[domain.Event]{
-		Data: events,
+	if len(events) == 0 {
+		c.Status(http.StatusNoContent)
+		return
+	}
+
+	eventsResponse := make([]dtos.EventResponse, len(events))
+	for i, event := range events {
+		eventsResponse[i] = mapToDomainEventResponse(event)
+	}
+
+	res := dtos.PagedResponse[dtos.EventResponse]{
+		Data: eventsResponse,
 		Meta: dtos.PagedMeta{
 			Total:    total,
 			Page:     int32(page),
@@ -115,15 +144,32 @@ func (h *EventHandler) Create(c *gin.Context) {
 		response.HandleError(c, err)
 		return
 	}
-	dto.CreatedBy = uid
 
-	event, err := h.usecase.CreateEvent(c.Request.Context(), dto)
+	isActive := false
+	if dto.IsActive != nil {
+		isActive = *dto.IsActive
+	}
+	dto.IsActive = &isActive
+
+	newEvent := domain.Event{
+		Name:     dto.Name,
+		Slug:     dto.Slug,
+		IsActive: dto.IsActive,
+		Audit: domain.Audit{
+			CreatedBy: uid,
+			UpdatedBy: uid,
+		},
+	}
+
+	event, err := h.usecase.CreateEvent(c.Request.Context(), &newEvent)
 	if err != nil {
 		response.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, event)
+	eventsResponse := mapToDomainEventResponse(*event)
+
+	c.JSON(http.StatusCreated, eventsResponse)
 }
 
 // Update
@@ -148,15 +194,23 @@ func (h *EventHandler) Update(c *gin.Context) {
 		response.HandleError(c, err)
 		return
 	}
-	dto.UpdatedBy = uid
 
-	event, err := h.usecase.UpdateEvent(c.Request.Context(), id, dto)
+	upEvent := domain.UpdateEvent{
+		Name:      dto.Name,
+		Slug:      dto.Slug,
+		IsActive:  dto.IsActive,
+		UpdatedBy: uid,
+	}
+
+	event, err := h.usecase.UpdateEvent(c.Request.Context(), id, &upEvent)
 	if err != nil {
 		response.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	eventsResponse := mapToDomainEventResponse(*event)
+
+	c.JSON(http.StatusOK, eventsResponse)
 }
 
 // Delete
@@ -175,4 +229,17 @@ func (h *EventHandler) Delete(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+func mapToDomainEventResponse(event domain.Event) dtos.EventResponse {
+	return dtos.EventResponse{
+		ID:        event.ID,
+		Name:      event.Name,
+		Slug:      event.Slug,
+		IsActive:  event.IsActive,
+		CreatedAt: event.Audit.CreatedAt,
+		UpdatedAt: event.Audit.UpdatedAt,
+		CreatedBy: event.Audit.CreatedBy,
+		UpdatedBy: event.Audit.UpdatedBy,
+	}
 }
