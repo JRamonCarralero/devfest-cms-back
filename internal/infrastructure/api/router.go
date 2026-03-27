@@ -65,6 +65,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	speakerUsecase := usecase.NewSpeakerInteractor(speakerRepo, personRepo, eventRepo)
 	speakerHandler := handlers.NewSpeakerHandler(speakerUsecase)
 
+	// Sponsors
+	sponsorRepo := repository.NewSponsorRepository(queries)
+	sponsorUsecase := usecase.NewSponsorInteractor(sponsorRepo, eventRepo)
+	sponsorHandler := handlers.NewSponsorHandler(sponsorUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -148,6 +153,19 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protectedSpeakers.POST("", speakerHandler.Create)
 		protectedSpeakers.PUT("/:id", speakerHandler.Update)
 		protectedSpeakers.DELETE("/:id", speakerHandler.Delete)
+	}
+
+	sponsors := api.Group("/sponsors")
+	protectedSponsors := sponsors.Group("/")
+	protectedSponsors.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		sponsors.GET("/event/:event-id", sponsorHandler.GetAll)
+		sponsors.GET("/id/:id", sponsorHandler.GetByID)
+		sponsors.GET("/event/:event-id/paged", sponsorHandler.ListPaged)
+
+		protectedSponsors.POST("", sponsorHandler.Create)
+		protectedSponsors.PUT("/:id", sponsorHandler.Update)
+		protectedSponsors.DELETE("/:id", sponsorHandler.Delete)
 	}
 
 	return r

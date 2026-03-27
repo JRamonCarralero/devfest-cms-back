@@ -205,7 +205,7 @@ func mapToSponsorResponse(sponsor *domain.Sponsor) dtos.SponsorResponse {
 		LogoURL:       sponsor.LogoURL,
 		WebsiteURL:    sponsor.WebsiteURL,
 		Tier:          sponsor.Tier,
-		OrderPriority: *sponsor.OrderPriority,
+		OrderPriority: utils.SafeInt(sponsor.OrderPriority),
 		AuditDTO: dtos.AuditDTO{
 			CreatedAt: sponsor.Audit.CreatedAt,
 			UpdatedAt: sponsor.Audit.UpdatedAt,
