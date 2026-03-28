@@ -114,3 +114,25 @@ func PtrToString(s *string) string {
 	}
 	return *s
 }
+
+func SafeInt(i *int) int {
+	if i == nil {
+		return 0
+	}
+	return *i
+}
+
+func Int4ToPtr(i pgtype.Int4) *int {
+	if !i.Valid {
+		return nil
+	}
+	val := int(i.Int32)
+	return &val
+}
+
+func PtrToInt4(i *int) pgtype.Int4 {
+	if i == nil {
+		return pgtype.Int4{Valid: false}
+	}
+	return pgtype.Int4{Int32: int32(*i), Valid: true}
+}
