@@ -373,6 +373,40 @@ components:
         meta:
           $ref: '#/components/schemas/PagedMeta'
 
+    # --- SPONSORS ---
+
+    UpdateSponsorDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        logo_url:
+          type: string
+        website_url:
+          type: string
+        tier:
+          type: string
+        order_priority:
+          type: integer
+    CreateSponsorDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateSponsorDTO'
+      - type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+        required: [event_id, name, logo_url, website_url, tier]
+    SponsorResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateSponsorDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+
 # --- PATHS ---
 
 paths:
@@ -1375,5 +1409,164 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/SpeakerDetailResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # --- Sponsors ---
+  
+  /api/v1/sponsor:
+    post:
+      summary: Create a Sponsor
+      description: Create a Sponsor
+      tags:
+        - Sponsors
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSponsorDTO'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/sponsor/{id}:
+    put:
+      summary: Update a Sponsor by ID
+      description: Update a Sponsor by ID
+      tags:
+        - Sponsors
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSponsorDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a Sponsor by ID
+      description: Delete a Sponsor by ID
+      tags:
+        - Sponsors
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/sponsor/event/{event-id}:
+    get:
+      summary: Get all Sponsors for an event
+      description: Get all Sponsors for an event
+      tags:
+        - Sponsors
+      parameters:
+        - name: event-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SponsorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/sponsor/id/{id}:
+    get:
+      summary: Get a Sponsor by ID
+      description: Get a Sponsor by ID
+      tags:
+        - Sponsors
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/sponsor/event/{event-id}/paged:
+    get:
+      summary: Get all Sponsors for an event with pagination
+      description: Get all Sponsors for an event with pagination
+      tags:
+        - Sponsors
+      parameters:
+        - name: event-id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+      responses:
+        '200':
+          $ref: '#/components/schemas/SponsorResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
