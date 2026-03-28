@@ -86,6 +86,9 @@ func (s *sponsorInteractor) Update(ctx context.Context, id uuid.UUID, upSponsor 
 	if upSponsor.Tier != nil {
 		sponsor.Tier = *upSponsor.Tier
 	}
+	if upSponsor.OrderPriority != nil {
+		sponsor.OrderPriority = upSponsor.OrderPriority
+	}
 	sponsor.Audit.UpdatedBy = upSponsor.UpdatedBy
 
 	return s.sponsorRepository.Update(ctx, sponsor)
