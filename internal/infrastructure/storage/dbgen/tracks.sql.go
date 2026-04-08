@@ -82,16 +82,17 @@ SELECT
     tr.event_date,
     (
         SELECT json_agg(json_build_object(
-            'schedule_id', sch.id,
+            'id', sch.id,
             'start_time', sch.start_time,
             'end_time', sch.end_time,
             'room', sch.room,
-            'talk', json_build_object(
+            'talk', CASE WHEN t.id IS NOT NULL THEN json_build_object(
                 'id', t.id,
                 'title', t.title,
                 'description', t.description,
                 'speakers', (
                     SELECT json_agg(json_build_object(
+                        'id', s.id,
                         'first_name', p.first_name,
                         'last_name', p.last_name,
                         'avatar_url', p.avatar_url,
@@ -102,7 +103,7 @@ SELECT
                     JOIN persons p ON s.person_id = p.id
                     WHERE ts.talk_id = t.id
                 )
-            )
+            ) ELSE NULL END
         ) ORDER BY sch.start_time ASC)
         FROM scheduler sch
         LEFT JOIN talks t ON sch.talk_id = t.id
