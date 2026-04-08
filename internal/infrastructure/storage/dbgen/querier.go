@@ -49,6 +49,7 @@ type Querier interface {
 	// queries/events.sql
 	GetEventByID(ctx context.Context, id uuid.UUID) (Event, error)
 	GetEventBySlug(ctx context.Context, slug string) (Event, error)
+	GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]GetFullEventScheduleRow, error)
 	GetOrganizerByID(ctx context.Context, id uuid.UUID) (GetOrganizerByIDRow, error)
 	GetOrganizerByPersonAndEvent(ctx context.Context, arg GetOrganizerByPersonAndEventParams) (uuid.UUID, error)
 	GetPersonByEmail(ctx context.Context, email pgtype.Text) (Person, error)

@@ -26,6 +26,43 @@ AND (
 ORDER BY event_date ASC, name ASC
 LIMIT $2 OFFSET $3;
 
+-- name: GetFullEventSchedule :many
+SELECT 
+    tr.id AS track_id,
+    tr.name AS track_name,
+    tr.event_date,
+    (
+        SELECT json_agg(json_build_object(
+            'schedule_id', sch.id,
+            'start_time', sch.start_time,
+            'end_time', sch.end_time,
+            'room', sch.room,
+            'talk', json_build_object(
+                'id', t.id,
+                'title', t.title,
+                'description', t.description,
+                'speakers', (
+                    SELECT json_agg(json_build_object(
+                        'first_name', p.first_name,
+                        'last_name', p.last_name,
+                        'avatar_url', p.avatar_url,
+                        'company', s.company
+                    ))
+                    FROM talk_speakers ts
+                    JOIN speakers s ON ts.speaker_id = s.id
+                    JOIN persons p ON s.person_id = p.id
+                    WHERE ts.talk_id = t.id
+                )
+            )
+        ) ORDER BY sch.start_time ASC)
+        FROM scheduler sch
+        LEFT JOIN talks t ON sch.talk_id = t.id
+        WHERE sch.track_id = tr.id
+    ) AS entries
+FROM tracks tr
+WHERE tr.event_id = $1
+ORDER BY tr.event_date ASC, tr.name ASC;
+
 -- name: CountTracksByEvent :one
 SELECT COUNT(*) FROM tracks
 WHERE event_id = $1

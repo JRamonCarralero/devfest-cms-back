@@ -75,6 +75,76 @@ func (q *Queries) DeleteTrack(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getFullEventSchedule = `-- name: GetFullEventSchedule :many
+SELECT 
+    tr.id AS track_id,
+    tr.name AS track_name,
+    tr.event_date,
+    (
+        SELECT json_agg(json_build_object(
+            'schedule_id', sch.id,
+            'start_time', sch.start_time,
+            'end_time', sch.end_time,
+            'room', sch.room,
+            'talk', json_build_object(
+                'id', t.id,
+                'title', t.title,
+                'description', t.description,
+                'speakers', (
+                    SELECT json_agg(json_build_object(
+                        'first_name', p.first_name,
+                        'last_name', p.last_name,
+                        'avatar_url', p.avatar_url,
+                        'company', s.company
+                    ))
+                    FROM talk_speakers ts
+                    JOIN speakers s ON ts.speaker_id = s.id
+                    JOIN persons p ON s.person_id = p.id
+                    WHERE ts.talk_id = t.id
+                )
+            )
+        ) ORDER BY sch.start_time ASC)
+        FROM scheduler sch
+        LEFT JOIN talks t ON sch.talk_id = t.id
+        WHERE sch.track_id = tr.id
+    ) AS entries
+FROM tracks tr
+WHERE tr.event_id = $1
+ORDER BY tr.event_date ASC, tr.name ASC
+`
+
+type GetFullEventScheduleRow struct {
+	TrackID   uuid.UUID   `json:"track_id"`
+	TrackName string      `json:"track_name"`
+	EventDate pgtype.Date `json:"event_date"`
+	Entries   []byte      `json:"entries"`
+}
+
+func (q *Queries) GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]GetFullEventScheduleRow, error) {
+	rows, err := q.db.Query(ctx, getFullEventSchedule, eventID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFullEventScheduleRow
+	for rows.Next() {
+		var i GetFullEventScheduleRow
+		if err := rows.Scan(
+			&i.TrackID,
+			&i.TrackName,
+			&i.EventDate,
+			&i.Entries,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTrackByID = `-- name: GetTrackByID :one
 SELECT id, event_id, name, event_date, created_at, updated_at, created_by, updated_by FROM tracks
 WHERE id = $1 LIMIT 1
