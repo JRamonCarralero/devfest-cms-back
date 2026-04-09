@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +17,8 @@ type Track struct {
 
 type UpdateTrack struct {
 	Name      *string
-	EventDate *string
+	EventDate *time.Time
+	UpdatedBy uuid.UUID
 }
 
 // Detailed Track
@@ -48,4 +50,26 @@ type FullTrackSchedule struct {
 	TrackName string               `json:"track_name"`
 	EventDate time.Time            `json:"event_date"`
 	Entries   []ScheduleEntryTrack `json:"entries"`
+}
+
+type TrackUsecase interface {
+	// Readers
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Track, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Track, error)
+	GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]FullTrackSchedule, error)
+	// Writers
+	Create(ctx context.Context, track *Track) (*Track, error)
+	Update(ctx context.Context, id uuid.UUID, update *UpdateTrack) (*Track, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+type TrackRepository interface {
+	// Readers
+	GetTracksByEventID(ctx context.Context, eventID uuid.UUID) ([]Track, error)
+	GetTrackByID(ctx context.Context, trackID uuid.UUID) (*Track, error)
+	GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]FullTrackSchedule, error)
+	// Writers
+	CreateTrack(ctx context.Context, track *Track) (*Track, error)
+	UpdateTrack(ctx context.Context, track *Track) (*Track, error)
+	DeleteTrack(ctx context.Context, trackID uuid.UUID) error
 }
