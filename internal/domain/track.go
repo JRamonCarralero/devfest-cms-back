@@ -65,11 +65,11 @@ type TrackUsecase interface {
 
 type TrackRepository interface {
 	// Readers
-	GetTracksByEventID(ctx context.Context, eventID uuid.UUID) ([]Track, error)
-	GetTrackByID(ctx context.Context, trackID uuid.UUID) (*Track, error)
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Track, error)
+	GetById(ctx context.Context, trackID uuid.UUID) (*Track, error)
 	GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]FullTrackSchedule, error)
 	// Writers
-	CreateTrack(ctx context.Context, track *Track) (*Track, error)
-	UpdateTrack(ctx context.Context, track *Track) (*Track, error)
-	DeleteTrack(ctx context.Context, trackID uuid.UUID) error
+	Create(ctx context.Context, track *Track) (*Track, error)
+	Update(ctx context.Context, track *Track) (*Track, error)
+	Delete(ctx context.Context, trackID uuid.UUID) error
 }

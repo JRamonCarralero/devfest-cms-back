@@ -70,6 +70,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	sponsorUsecase := usecase.NewSponsorInteractor(sponsorRepo, eventRepo)
 	sponsorHandler := handlers.NewSponsorHandler(sponsorUsecase)
 
+	// Tracks
+	trackRepo := repository.NewTrackRepository(queries)
+	trackUsecase := usecase.NewTrackInteractor(trackRepo, eventRepo)
+	trackHandler := handlers.NewTrackHandler(trackUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -166,6 +171,19 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protectedSponsors.POST("", sponsorHandler.Create)
 		protectedSponsors.PUT("/:id", sponsorHandler.Update)
 		protectedSponsors.DELETE("/:id", sponsorHandler.Delete)
+	}
+
+	tracks := api.Group("/tracks")
+	protectedTracks := tracks.Group("/")
+	protectedTracks.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		tracks.GET("/event/:event-id", trackHandler.GetAll)
+		tracks.GET("/id/:id", trackHandler.GetByID)
+		tracks.GET("/event/:event-id/full", trackHandler.GetFullEventSchedule)
+
+		protectedTracks.POST("", trackHandler.Create)
+		protectedTracks.PUT("/:id", trackHandler.Update)
+		protectedTracks.DELETE("/:id", trackHandler.Delete)
 	}
 
 	return r

@@ -30,12 +30,12 @@ func (t *trackInteractor) GetAll(ctx context.Context, eventID uuid.UUID) ([]doma
 		return nil, err
 	}
 
-	return t.trackRepository.GetTracksByEventID(ctx, eventID)
+	return t.trackRepository.GetAll(ctx, eventID)
 }
 
 // GetById
 func (t *trackInteractor) GetById(ctx context.Context, id uuid.UUID) (*domain.Track, error) {
-	return t.trackRepository.GetTrackByID(ctx, id)
+	return t.trackRepository.GetById(ctx, id)
 }
 
 // GetFullEventSchedule
@@ -52,12 +52,12 @@ func (t *trackInteractor) Create(ctx context.Context, track *domain.Track) (*dom
 		return nil, err
 	}
 
-	return t.trackRepository.CreateTrack(ctx, track)
+	return t.trackRepository.Create(ctx, track)
 }
 
 // Update
 func (t *trackInteractor) Update(ctx context.Context, id uuid.UUID, update *domain.UpdateTrack) (*domain.Track, error) {
-	track, err := t.trackRepository.GetTrackByID(ctx, id)
+	track, err := t.trackRepository.GetById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -70,10 +70,10 @@ func (t *trackInteractor) Update(ctx context.Context, id uuid.UUID, update *doma
 	}
 	track.UpdatedBy = update.UpdatedBy
 
-	return t.trackRepository.UpdateTrack(ctx, track)
+	return t.trackRepository.Update(ctx, track)
 }
 
 // Delete
 func (t *trackInteractor) Delete(ctx context.Context, id uuid.UUID) error {
-	return t.trackRepository.DeleteTrack(ctx, id)
+	return t.trackRepository.Delete(ctx, id)
 }
