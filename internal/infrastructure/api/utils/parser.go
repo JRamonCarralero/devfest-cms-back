@@ -2,6 +2,7 @@ package utils
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -135,4 +136,20 @@ func PtrToInt4(i *int) pgtype.Int4 {
 		return pgtype.Int4{Valid: false}
 	}
 	return pgtype.Int4{Int32: int32(*i), Valid: true}
+}
+
+// ToPgDate
+func ToPgDate(t time.Time) pgtype.Date {
+	return pgtype.Date{
+		Time:  t,
+		Valid: !t.IsZero(),
+	}
+}
+
+// ToPgTimestamp
+func ToPgTimestamp(t time.Time) pgtype.Timestamp {
+	return pgtype.Timestamp{
+		Time:  t,
+		Valid: !t.IsZero(),
+	}
 }

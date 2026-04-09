@@ -2,9 +2,11 @@
 INSERT INTO tracks (
     event_id,
     name,
-    event_date
+    event_date,
+    created_by,
+    updated_by
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4, $4
 )
 RETURNING *;
 
@@ -75,7 +77,9 @@ AND (
 UPDATE tracks
 SET 
     name = COALESCE(sqlc.narg('name'), name),
-    event_date = COALESCE(sqlc.narg('event_date'), event_date)
+    event_date = COALESCE(sqlc.narg('event_date'), event_date),
+    updated_at = NOW(),
+    updated_by = $2
 WHERE id = $1
 RETURNING *;
 

@@ -36,9 +36,11 @@ const createTrack = `-- name: CreateTrack :one
 INSERT INTO tracks (
     event_id,
     name,
-    event_date
+    event_date,
+    created_by,
+    updated_by
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4, $4
 )
 RETURNING id, event_id, name, event_date, created_at, updated_at, created_by, updated_by
 `
@@ -47,10 +49,16 @@ type CreateTrackParams struct {
 	EventID   uuid.UUID   `json:"event_id"`
 	Name      string      `json:"name"`
 	EventDate pgtype.Date `json:"event_date"`
+	CreatedBy uuid.UUID   `json:"created_by"`
 }
 
 func (q *Queries) CreateTrack(ctx context.Context, arg CreateTrackParams) (Track, error) {
-	row := q.db.QueryRow(ctx, createTrack, arg.EventID, arg.Name, arg.EventDate)
+	row := q.db.QueryRow(ctx, createTrack,
+		arg.EventID,
+		arg.Name,
+		arg.EventDate,
+		arg.CreatedBy,
+	)
 	var i Track
 	err := row.Scan(
 		&i.ID,
@@ -256,20 +264,28 @@ func (q *Queries) ListTracksByEventPaged(ctx context.Context, arg ListTracksByEv
 const updateTrack = `-- name: UpdateTrack :one
 UPDATE tracks
 SET 
-    name = COALESCE($2, name),
-    event_date = COALESCE($3, event_date)
+    name = COALESCE($3, name),
+    event_date = COALESCE($4, event_date),
+    updated_at = NOW(),
+    updated_by = $2
 WHERE id = $1
 RETURNING id, event_id, name, event_date, created_at, updated_at, created_by, updated_by
 `
 
 type UpdateTrackParams struct {
 	ID        uuid.UUID   `json:"id"`
+	UpdatedBy uuid.UUID   `json:"updated_by"`
 	Name      pgtype.Text `json:"name"`
 	EventDate pgtype.Date `json:"event_date"`
 }
 
 func (q *Queries) UpdateTrack(ctx context.Context, arg UpdateTrackParams) (Track, error) {
-	row := q.db.QueryRow(ctx, updateTrack, arg.ID, arg.Name, arg.EventDate)
+	row := q.db.QueryRow(ctx, updateTrack,
+		arg.ID,
+		arg.UpdatedBy,
+		arg.Name,
+		arg.EventDate,
+	)
 	var i Track
 	err := row.Scan(
 		&i.ID,

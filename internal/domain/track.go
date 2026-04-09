@@ -22,30 +22,30 @@ type UpdateTrack struct {
 // Detailed Track
 
 type SpeakerTrack struct {
-	FirstName string
-	LastName  string
-	AvatarURL string
-	Company   string
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	AvatarURL string `json:"avatar_url"`
+	Company   string `json:"company"`
 }
 
 type TalkTrack struct {
-	ID          uuid.UUID
-	Title       string
-	Description string
-	Speakers    []SpeakerTrack
+	ID          uuid.UUID      `json:"id"`
+	Title       string         `json:"title"`
+	Description string         `json:"description"`
+	Speakers    []SpeakerTrack `json:"speakers"`
 }
 
 type ScheduleEntryTrack struct {
-	ScheduleID uuid.UUID
-	StartTime  time.Time
-	EndTime    time.Time
-	Room       string
-	Talk       TalkTrack
+	ScheduleID uuid.UUID `json:"schedule_id"`
+	StartTime  time.Time `json:"start_time"`
+	EndTime    time.Time `json:"end_time"`
+	Room       string    `json:"room"`
+	Talk       TalkTrack `json:"talk"`
 }
 
 type FullTrackSchedule struct {
-	TrackID   uuid.UUID
-	TrackName string
-	EventDate time.Time
-	Entries   []ScheduleEntryTrack
+	TrackID   uuid.UUID            `json:"track_id"`
+	TrackName string               `json:"track_name"`
+	EventDate time.Time            `json:"event_date"`
+	Entries   []ScheduleEntryTrack `json:"entries"`
 }
