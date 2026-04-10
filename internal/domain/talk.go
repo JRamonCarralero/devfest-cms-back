@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,4 +40,30 @@ type TalkSpeaker struct {
 	SpeakerID uuid.UUID
 	CreatedBy uuid.UUID
 	CreatedAt time.Time
+}
+
+type TalkUsecase interface {
+	// Readers
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Talk, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Talk, error)
+	// Writers
+	Create(ctx context.Context, talk *Talk) (*Talk, error)
+	Update(ctx context.Context, id uuid.UUID, upTalk *UpdateTalk) (*Talk, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	// Talk-Speaker
+	AddSpeaker(ctx context.Context, speaker *TalkSpeaker) error
+	RemoveSpeaker(ctx context.Context, speaker *TalkSpeaker) error
+}
+
+type TalkRepository interface {
+	// Readers
+	GetAll(ctx context.Context, eventID uuid.UUID) ([]Talk, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Talk, error)
+	// Writers
+	Create(ctx context.Context, talk *Talk) (*Talk, error)
+	Update(ctx context.Context, talk *Talk) (*Talk, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	// Talk-Speaker
+	AddSpeaker(ctx context.Context, speaker *TalkSpeaker) error
+	RemoveSpeaker(ctx context.Context, speaker *TalkSpeaker) error
 }
