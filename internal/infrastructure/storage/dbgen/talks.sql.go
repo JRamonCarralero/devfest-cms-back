@@ -310,13 +310,18 @@ func (q *Queries) ListTalksByEventPaged(ctx context.Context, arg ListTalksByEven
 	return items, nil
 }
 
-const removeSpeakersFromTalk = `-- name: RemoveSpeakersFromTalk :exec
+const removeSpeakerFromTalk = `-- name: RemoveSpeakerFromTalk :exec
 DELETE FROM talk_speakers 
-WHERE talk_id = $1
+WHERE talk_id = $1 AND speaker_id = $2
 `
 
-func (q *Queries) RemoveSpeakersFromTalk(ctx context.Context, talkID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, removeSpeakersFromTalk, talkID)
+type RemoveSpeakerFromTalkParams struct {
+	TalkID    uuid.UUID `json:"talk_id"`
+	SpeakerID uuid.UUID `json:"speaker_id"`
+}
+
+func (q *Queries) RemoveSpeakerFromTalk(ctx context.Context, arg RemoveSpeakerFromTalkParams) error {
+	_, err := q.db.Exec(ctx, removeSpeakerFromTalk, arg.TalkID, arg.SpeakerID)
 	return err
 }
 

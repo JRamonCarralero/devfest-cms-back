@@ -109,6 +109,6 @@ WHERE id = $1;
 INSERT INTO talk_speakers (talk_id, speaker_id, created_by)
 VALUES ($1, $2, $3);
 
--- name: RemoveSpeakersFromTalk :exec
+-- name: RemoveSpeakerFromTalk :exec
 DELETE FROM talk_speakers 
-WHERE talk_id = $1;
+WHERE talk_id = $1 AND speaker_id = $2;

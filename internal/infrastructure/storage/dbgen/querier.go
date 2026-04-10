@@ -82,7 +82,7 @@ type Querier interface {
 	ListTalksByEventPaged(ctx context.Context, arg ListTalksByEventPagedParams) ([]ListTalksByEventPagedRow, error)
 	ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]Track, error)
 	ListTracksByEventPaged(ctx context.Context, arg ListTracksByEventPagedParams) ([]Track, error)
-	RemoveSpeakersFromTalk(ctx context.Context, talkID uuid.UUID) error
+	RemoveSpeakerFromTalk(ctx context.Context, arg RemoveSpeakerFromTalkParams) error
 	UpdateCollaborator(ctx context.Context, arg UpdateCollaboratorParams) (Collaborator, error)
 	UpdateDeveloper(ctx context.Context, arg UpdateDeveloperParams) (Developer, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
