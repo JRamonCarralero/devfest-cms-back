@@ -67,7 +67,6 @@ type Querier interface {
 	ListDevelopersByEventPaged(ctx context.Context, arg ListDevelopersByEventPagedParams) ([]ListDevelopersByEventPagedRow, error)
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
-	ListFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]ListFullEventScheduleRow, error)
 	ListOrganizersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListOrganizersByEventRow, error)
 	ListOrganizersByEventPaged(ctx context.Context, arg ListOrganizersByEventPagedParams) ([]ListOrganizersByEventPagedRow, error)
 	ListPersons(ctx context.Context) ([]Person, error)

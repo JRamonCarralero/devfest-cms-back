@@ -8,13 +8,13 @@ import (
 )
 
 type SpeakerTalkDetail struct {
-	ID        uuid.UUID
-	FirstName string
-	LastName  string
-	Email     string
-	AvatarURL string
-	Company   string
-	Bio       string
+	ID        uuid.UUID `json:"id"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Email     string    `json:"email"`
+	AvatarURL string    `json:"avatar_url"`
+	Company   string    `json:"company"`
+	Bio       string    `json:"bio"`
 }
 
 type Talk struct {

@@ -153,3 +153,71 @@ func ToPgTimestamp(t time.Time) pgtype.Timestamp {
 		Valid: !t.IsZero(),
 	}
 }
+
+// PgTimeToTime
+func PgTimeToTime(p pgtype.Time) time.Time {
+	if !p.Valid {
+		return time.Time{}
+	}
+	return time.Time{}.Add(time.Duration(p.Microseconds) * time.Microsecond)
+}
+
+// TimeToPgTime
+func TimeToPgTime(t time.Time) pgtype.Time {
+	if t.IsZero() {
+		return pgtype.Time{Valid: false}
+	}
+	midnight := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	durationSinceMidnight := t.Sub(midnight)
+
+	return pgtype.Time{
+		Microseconds: durationSinceMidnight.Microseconds(),
+		Valid:        true,
+	}
+}
+
+// PgIntervalToDuration
+func PgIntervalToDuration(p pgtype.Interval) time.Duration {
+	if !p.Valid {
+		return 0
+	}
+
+	const (
+		hoursInDay = 24
+	)
+	totalMicroseconds := p.Microseconds
+
+	if p.Days > 0 {
+		totalMicroseconds += int64(p.Days) * hoursInDay * int64(time.Hour/time.Microsecond)
+	}
+
+	return time.Duration(totalMicroseconds) * time.Microsecond
+}
+
+// DurationToPgInterval
+func DurationToPgInterval(d time.Duration) pgtype.Interval {
+	if d == 0 {
+		return pgtype.Interval{Valid: false}
+	}
+
+	return pgtype.Interval{
+		Microseconds: d.Microseconds(),
+		Valid:        true,
+	}
+}
+
+// PgUUIDToUUID
+func PgUUIDToUUID(p pgtype.UUID) uuid.UUID {
+	if !p.Valid {
+		return uuid.UUID{}
+	}
+	return uuid.UUID(p.Bytes)
+}
+
+// UUIDToPgUUID
+func UUIDToPgUUID(u uuid.UUID) pgtype.UUID {
+	return pgtype.UUID{
+		Bytes: [16]byte(u),
+		Valid: true,
+	}
+}

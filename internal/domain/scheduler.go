@@ -10,10 +10,10 @@ type Scheduler struct {
 	ID uuid.UUID
 	Track
 	Talk
-	StarTime time.Time
-	EndTime  time.Time
-	Duration time.Duration
-	Room     *string
+	StartTime time.Time
+	EndTime   time.Time
+	Duration  time.Duration
+	Room      string
 	Audit
 }
 
