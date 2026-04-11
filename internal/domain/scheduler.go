@@ -16,3 +16,10 @@ type Scheduler struct {
 	Room     *string
 	Audit
 }
+
+type UpdateScheduler struct {
+	StartTime *string
+	EndTime   *string
+	Room      *string
+	UpdatedBy uuid.UUID
+}

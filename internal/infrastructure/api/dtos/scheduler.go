@@ -8,12 +8,20 @@ type CreateSchedulerDTO struct {
 	StartTime string    `json:"start_time" binding:"required"`
 	EndTime   string    `json:"end_time" binding:"required"`
 	Room      *string   `json:"room" binding:"required"`
-	CreatedBy uuid.UUID `json:"-"`
 }
 
 type UpdateSchedulerDTO struct {
-	StartTime *string   `json:"start_time" binding:"omitempty"`
-	EndTime   *string   `json:"end_time" binding:"omitempty"`
-	Room      *string   `json:"room" binding:"omitempty"`
-	UpdatedBy uuid.UUID `json:"-"`
+	StartTime *string `json:"start_time" binding:"omitempty"`
+	EndTime   *string `json:"end_time" binding:"omitempty"`
+	Room      *string `json:"room" binding:"omitempty"`
+}
+
+type ScheduleResponse struct {
+	ScheduleID uuid.UUID `json:"schedule_id"`
+	TrackID    uuid.UUID `json:"track_id"`
+	TalkID     uuid.UUID `json:"talk_id"`
+	StartTime  string    `json:"start_time"`
+	EndTime    string    `json:"end_time"`
+	Room       string    `json:"room"`
+	AuditDTO
 }
