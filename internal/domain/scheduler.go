@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,4 +23,24 @@ type UpdateScheduler struct {
 	EndTime   *string
 	Room      *string
 	UpdatedBy uuid.UUID
+}
+
+type SchedulerUsecase interface {
+	// Readers
+	GetAllByTrack(ctx context.Context, trackID uuid.UUID) ([]Scheduler, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Scheduler, error)
+	// Writers
+	Create(ctx context.Context, scheduler *Scheduler) (*Scheduler, error)
+	Update(ctx context.Context, id uuid.UUID, upScheduler *UpdateScheduler) (*Scheduler, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+type SchedulerRepository interface {
+	// Readers
+	GetAllByTrack(ctx context.Context, trackID uuid.UUID) ([]Scheduler, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Scheduler, error)
+	// Writers
+	Create(ctx context.Context, scheduler *Scheduler) (*Scheduler, error)
+	Update(ctx context.Context, scheduler *Scheduler) (*Scheduler, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
