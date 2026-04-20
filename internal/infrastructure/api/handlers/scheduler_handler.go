@@ -24,7 +24,7 @@ func NewSchedulerHandler(usecase domain.SchedulerUsecase) *SchedulerHandler {
 
 // GetAllByTrack
 func (sh *SchedulerHandler) GetAllByTrack(ctx *gin.Context) {
-	trackId, err := uuid.Parse(ctx.Param("trackId"))
+	trackId, err := uuid.Parse(ctx.Param("track-id"))
 	if err != nil {
 		newErr := domain.NewAppError(domain.TypeBadRequest, "Invalid Track ID", err)
 		response.HandleError(ctx, newErr)

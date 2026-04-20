@@ -80,6 +80,11 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	talkUsecase := usecase.NewTalkInteractor(talkRepo, eventRepo)
 	talkHandler := handlers.NewTalkHandler(talkUsecase)
 
+	// Schedulers
+	schedulerRepo := repository.NewSchedulerRepository(queries)
+	schedulerUsecase := usecase.NewSchedulerInteractor(schedulerRepo, eventRepo)
+	schedulerHandler := handlers.NewSchedulerHandler(schedulerUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -204,6 +209,18 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 
 		protectedTalks.POST("/speaker/add", talkHandler.AddSpeaker)
 		protectedTalks.DELETE("/speaker/remove", talkHandler.RemoveSpeaker)
+	}
+
+	schedulers := api.Group("/schedulers")
+	protectedSchedulers := schedulers.Group("/")
+	protectedSchedulers.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		schedulers.GET("/track/:track-id", schedulerHandler.GetAllByTrack)
+		schedulers.GET("/id/:id", schedulerHandler.GetByID)
+
+		protectedSchedulers.POST("", schedulerHandler.Create)
+		protectedSchedulers.PUT("/:id", schedulerHandler.Update)
+		protectedSchedulers.DELETE("/:id", schedulerHandler.Delete)
 	}
 
 	return r
