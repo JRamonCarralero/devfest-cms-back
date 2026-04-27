@@ -77,11 +77,16 @@ func (h *TalkHandler) Create(ctx *gin.Context) {
 		return
 	}
 
+	var tags []string
+	if req.Tags != nil {
+		tags = *req.Tags
+	}
+
 	talk := &domain.Talk{
 		EventID:     req.EventID,
 		Title:       req.Title,
 		Description: req.Description,
-		Tags:        req.Tags,
+		Tags:        tags,
 		Audit: domain.Audit{
 			CreatedBy: uid,
 		},
@@ -118,10 +123,15 @@ func (h *TalkHandler) Update(ctx *gin.Context) {
 		return
 	}
 
+	var tags []string
+	if req.Tags != nil {
+		tags = req.Tags
+	}
+
 	updTalk := &domain.UpdateTalk{
 		Title:       req.Title,
 		Description: req.Description,
-		Tags:        req.Tags,
+		Tags:        tags,
 		UpdatedBy:   uid,
 	}
 
@@ -230,7 +240,7 @@ func mapToTalkResponse(talk *domain.Talk) dtos.TalkResponse {
 		EventID:     talk.EventID,
 		Title:       talk.Title,
 		Description: talk.Description,
-		Tags:        *talk.Tags,
+		Tags:        talk.Tags,
 		Speakers:    speakers,
 	}
 }

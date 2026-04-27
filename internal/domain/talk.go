@@ -22,7 +22,7 @@ type Talk struct {
 	EventID     uuid.UUID
 	Title       string
 	Description string
-	Tags        *[]string
+	Tags        []string
 	Speakers    []SpeakerTalkDetail
 	Audit
 }

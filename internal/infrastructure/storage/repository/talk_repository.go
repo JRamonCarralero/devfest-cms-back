@@ -72,7 +72,7 @@ func (r *TalkRepository) Create(ctx context.Context, talk *domain.Talk) (*domain
 		EventID:     talk.EventID,
 		Title:       talk.Title,
 		Description: utils.TextToPgString(talk.Description),
-		Tags:        *talk.Tags,
+		Tags:        talk.Tags,
 		CreatedBy:   talk.CreatedBy,
 	})
 	if err != nil {
@@ -88,7 +88,7 @@ func (r *TalkRepository) Update(ctx context.Context, talk *domain.Talk) (*domain
 		ID:          talk.ID,
 		Title:       utils.TextToPgString(talk.Title),
 		Description: utils.TextToPgString(talk.Description),
-		Tags:        *talk.Tags,
+		Tags:        talk.Tags,
 		UpdatedBy:   talk.UpdatedBy,
 	})
 	if err != nil {
@@ -151,7 +151,7 @@ func mapToDomainTalk(row talkDB) (*domain.Talk, error) {
 		EventID:     row.EventID,
 		Title:       row.Title,
 		Description: utils.PgStringToText(row.Description),
-		Tags:        &row.Tags,
+		Tags:        row.Tags,
 		Speakers:    speakers,
 		Audit: domain.Audit{
 			CreatedAt: row.CreatedAt.Time,
@@ -168,7 +168,7 @@ func mapToDomainTalkSimple(row dbgen.Talk) *domain.Talk {
 		EventID:     row.EventID,
 		Title:       row.Title,
 		Description: utils.PgStringToText(row.Description),
-		Tags:        &row.Tags,
+		Tags:        row.Tags,
 		Audit: domain.Audit{
 			CreatedAt: row.CreatedAt.Time,
 			CreatedBy: row.CreatedBy,

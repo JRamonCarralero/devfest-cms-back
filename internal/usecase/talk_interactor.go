@@ -64,7 +64,7 @@ func (t *talkInteractor) Update(ctx context.Context, id uuid.UUID, upTalk *domai
 		talk.Description = *upTalk.Description
 	}
 	if len(upTalk.Tags) > 0 {
-		talk.Tags = &upTalk.Tags
+		talk.Tags = upTalk.Tags
 	}
 	talk.UpdatedBy = upTalk.UpdatedBy
 
