@@ -73,7 +73,7 @@ func (r *TalkRepository) Create(ctx context.Context, talk *domain.Talk) (*domain
 		Title:       talk.Title,
 		Description: utils.TextToPgString(talk.Description),
 		Tags:        talk.Tags,
-		CreatedBy:   talk.CreatedBy,
+		CreatedBy:   talk.Audit.CreatedBy,
 	})
 	if err != nil {
 		return nil, ParseDBError(err, "Talk")
@@ -89,7 +89,7 @@ func (r *TalkRepository) Update(ctx context.Context, talk *domain.Talk) (*domain
 		Title:       utils.TextToPgString(talk.Title),
 		Description: utils.TextToPgString(talk.Description),
 		Tags:        talk.Tags,
-		UpdatedBy:   talk.UpdatedBy,
+		UpdatedBy:   talk.Audit.UpdatedBy,
 	})
 	if err != nil {
 		return nil, ParseDBError(err, "Talk")
