@@ -69,6 +69,7 @@ func (r *TrackRepository) Create(ctx context.Context, track *domain.Track) (*dom
 		Name:      track.Name,
 		EventID:   track.EventID,
 		EventDate: utils.ToPgDate(track.EventDate),
+		CreatedBy: track.Audit.CreatedBy,
 	})
 	if err != nil {
 		return nil, ParseDBError(err, "Track")
@@ -83,7 +84,7 @@ func (r *TrackRepository) Update(ctx context.Context, track *domain.Track) (*dom
 		ID:        track.ID,
 		Name:      utils.TextToPgString(track.Name),
 		EventDate: utils.ToPgDate(track.EventDate),
-		UpdatedBy: track.UpdatedBy,
+		UpdatedBy: track.Audit.UpdatedBy,
 	})
 	if err != nil {
 		return nil, ParseDBError(err, "Track")

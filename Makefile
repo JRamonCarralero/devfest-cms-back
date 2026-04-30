@@ -33,7 +33,7 @@ tidy:
 	go mod tidy
 
 # Run server in development mode
-dev: generate
+dev:
 	go run $(MAIN_PATH)
 
 # Build server
