@@ -68,16 +68,24 @@ func (q *Queries) DeleteScheduleEntry(ctx context.Context, id uuid.UUID) error {
 const getScheduleEntryByID = `-- name: GetScheduleEntryByID :one
 SELECT 
     sch.id, sch.track_id, sch.talk_id, sch.start_time, sch.end_time, sch.duration, sch.room, sch.updated_at, 
-    t.title as talk_title,
-    p.first_name as speaker_name,
-    p.last_name as speaker_last_name,
     tr.name as track_name,
-    tr.event_date
+    tr.event_date,
+    t.title as talk_title,
+    t.description as talk_description,
+    (
+        SELECT json_agg(json_build_object(
+            'first_name', p.first_name,
+            'last_name', p.last_name,
+            'avatar_url', p.avatar_url
+        ))
+        FROM talk_speakers ts
+        JOIN speakers s ON ts.speaker_id = s.id
+        JOIN persons p ON s.person_id = p.id
+        WHERE ts.talk_id = sch.talk_id
+    ) as speakers
 FROM scheduler sch
-LEFT JOIN talks t ON sch.talk_id = t.id
-LEFT JOIN speakers s ON t.speaker_id = s.id
-LEFT JOIN persons p ON s.person_id = p.id
 JOIN tracks tr ON sch.track_id = tr.id
+LEFT JOIN talks t ON sch.talk_id = t.id
 WHERE sch.id = $1 LIMIT 1
 `
 
@@ -90,11 +98,11 @@ type GetScheduleEntryByIDRow struct {
 	Duration        pgtype.Interval    `json:"duration"`
 	Room            pgtype.Text        `json:"room"`
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
-	TalkTitle       pgtype.Text        `json:"talk_title"`
-	SpeakerName     pgtype.Text        `json:"speaker_name"`
-	SpeakerLastName pgtype.Text        `json:"speaker_last_name"`
 	TrackName       string             `json:"track_name"`
 	EventDate       pgtype.Date        `json:"event_date"`
+	TalkTitle       pgtype.Text        `json:"talk_title"`
+	TalkDescription pgtype.Text        `json:"talk_description"`
+	Speakers        []byte             `json:"speakers"`
 }
 
 func (q *Queries) GetScheduleEntryByID(ctx context.Context, id uuid.UUID) (GetScheduleEntryByIDRow, error) {
@@ -109,108 +117,46 @@ func (q *Queries) GetScheduleEntryByID(ctx context.Context, id uuid.UUID) (GetSc
 		&i.Duration,
 		&i.Room,
 		&i.UpdatedAt,
-		&i.TalkTitle,
-		&i.SpeakerName,
-		&i.SpeakerLastName,
 		&i.TrackName,
 		&i.EventDate,
+		&i.TalkTitle,
+		&i.TalkDescription,
+		&i.Speakers,
 	)
 	return i, err
-}
-
-const listFullEventSchedule = `-- name: ListFullEventSchedule :many
-SELECT 
-    sch.id, sch.track_id, sch.talk_id, sch.start_time, sch.end_time, sch.duration, sch.room, sch.updated_at, 
-    tr.name as track_name,
-    tr.event_date,
-    t.title as talk_title,
-    p.first_name as speaker_name,
-    p.last_name as speaker_last_name
-FROM scheduler sch
-JOIN tracks tr ON sch.track_id = tr.id
-LEFT JOIN talks t ON sch.talk_id = t.id
-LEFT JOIN speakers s ON t.speaker_id = s.id
-LEFT JOIN persons p ON s.person_id = p.id
-WHERE tr.event_id = $1
-ORDER BY tr.event_date ASC, sch.start_time ASC
-`
-
-type ListFullEventScheduleRow struct {
-	ID              uuid.UUID          `json:"id"`
-	TrackID         uuid.UUID          `json:"track_id"`
-	TalkID          pgtype.UUID        `json:"talk_id"`
-	StartTime       pgtype.Time        `json:"start_time"`
-	EndTime         pgtype.Time        `json:"end_time"`
-	Duration        pgtype.Interval    `json:"duration"`
-	Room            pgtype.Text        `json:"room"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
-	TrackName       string             `json:"track_name"`
-	EventDate       pgtype.Date        `json:"event_date"`
-	TalkTitle       pgtype.Text        `json:"talk_title"`
-	SpeakerName     pgtype.Text        `json:"speaker_name"`
-	SpeakerLastName pgtype.Text        `json:"speaker_last_name"`
-}
-
-func (q *Queries) ListFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]ListFullEventScheduleRow, error) {
-	rows, err := q.db.Query(ctx, listFullEventSchedule, eventID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListFullEventScheduleRow
-	for rows.Next() {
-		var i ListFullEventScheduleRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.TrackID,
-			&i.TalkID,
-			&i.StartTime,
-			&i.EndTime,
-			&i.Duration,
-			&i.Room,
-			&i.UpdatedAt,
-			&i.TrackName,
-			&i.EventDate,
-			&i.TalkTitle,
-			&i.SpeakerName,
-			&i.SpeakerLastName,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listScheduleByTrack = `-- name: ListScheduleByTrack :many
 SELECT 
     sch.id, sch.track_id, sch.talk_id, sch.start_time, sch.end_time, sch.duration, sch.room, sch.updated_at, 
     t.title as talk_title,
-    p.first_name as speaker_name,
-    p.last_name as speaker_last_name
+    (
+        SELECT json_agg(json_build_object(
+            'first_name', p.first_name,
+            'last_name', p.last_name
+        ))
+        FROM talk_speakers ts
+        JOIN speakers s ON ts.speaker_id = s.id
+        JOIN persons p ON s.person_id = p.id
+        WHERE ts.talk_id = sch.talk_id
+    ) as speakers
 FROM scheduler sch
 LEFT JOIN talks t ON sch.talk_id = t.id
-LEFT JOIN speakers s ON t.speaker_id = s.id
-LEFT JOIN persons p ON s.person_id = p.id
 WHERE sch.track_id = $1
 ORDER BY sch.start_time ASC
 `
 
 type ListScheduleByTrackRow struct {
-	ID              uuid.UUID          `json:"id"`
-	TrackID         uuid.UUID          `json:"track_id"`
-	TalkID          pgtype.UUID        `json:"talk_id"`
-	StartTime       pgtype.Time        `json:"start_time"`
-	EndTime         pgtype.Time        `json:"end_time"`
-	Duration        pgtype.Interval    `json:"duration"`
-	Room            pgtype.Text        `json:"room"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
-	TalkTitle       pgtype.Text        `json:"talk_title"`
-	SpeakerName     pgtype.Text        `json:"speaker_name"`
-	SpeakerLastName pgtype.Text        `json:"speaker_last_name"`
+	ID        uuid.UUID          `json:"id"`
+	TrackID   uuid.UUID          `json:"track_id"`
+	TalkID    pgtype.UUID        `json:"talk_id"`
+	StartTime pgtype.Time        `json:"start_time"`
+	EndTime   pgtype.Time        `json:"end_time"`
+	Duration  pgtype.Interval    `json:"duration"`
+	Room      pgtype.Text        `json:"room"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	TalkTitle pgtype.Text        `json:"talk_title"`
+	Speakers  []byte             `json:"speakers"`
 }
 
 func (q *Queries) ListScheduleByTrack(ctx context.Context, trackID uuid.UUID) ([]ListScheduleByTrackRow, error) {
@@ -232,8 +178,7 @@ func (q *Queries) ListScheduleByTrack(ctx context.Context, trackID uuid.UUID) ([
 			&i.Room,
 			&i.UpdatedAt,
 			&i.TalkTitle,
-			&i.SpeakerName,
-			&i.SpeakerLastName,
+			&i.Speakers,
 		); err != nil {
 			return nil, err
 		}

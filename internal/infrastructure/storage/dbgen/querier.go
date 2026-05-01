@@ -49,6 +49,7 @@ type Querier interface {
 	// queries/events.sql
 	GetEventByID(ctx context.Context, id uuid.UUID) (Event, error)
 	GetEventBySlug(ctx context.Context, slug string) (Event, error)
+	GetFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]GetFullEventScheduleRow, error)
 	GetOrganizerByID(ctx context.Context, id uuid.UUID) (GetOrganizerByIDRow, error)
 	GetOrganizerByPersonAndEvent(ctx context.Context, arg GetOrganizerByPersonAndEventParams) (uuid.UUID, error)
 	GetPersonByEmail(ctx context.Context, email pgtype.Text) (Person, error)
@@ -66,7 +67,6 @@ type Querier interface {
 	ListDevelopersByEventPaged(ctx context.Context, arg ListDevelopersByEventPagedParams) ([]ListDevelopersByEventPagedRow, error)
 	ListEvents(ctx context.Context) ([]Event, error)
 	ListEventsPaged(ctx context.Context, arg ListEventsPagedParams) ([]Event, error)
-	ListFullEventSchedule(ctx context.Context, eventID uuid.UUID) ([]ListFullEventScheduleRow, error)
 	ListOrganizersByEvent(ctx context.Context, eventID uuid.UUID) ([]ListOrganizersByEventRow, error)
 	ListOrganizersByEventPaged(ctx context.Context, arg ListOrganizersByEventPagedParams) ([]ListOrganizersByEventPagedRow, error)
 	ListPersons(ctx context.Context) ([]Person, error)
@@ -81,7 +81,7 @@ type Querier interface {
 	ListTalksByEventPaged(ctx context.Context, arg ListTalksByEventPagedParams) ([]ListTalksByEventPagedRow, error)
 	ListTracksByEvent(ctx context.Context, eventID uuid.UUID) ([]Track, error)
 	ListTracksByEventPaged(ctx context.Context, arg ListTracksByEventPagedParams) ([]Track, error)
-	RemoveSpeakersFromTalk(ctx context.Context, talkID uuid.UUID) error
+	RemoveSpeakerFromTalk(ctx context.Context, arg RemoveSpeakerFromTalkParams) error
 	UpdateCollaborator(ctx context.Context, arg UpdateCollaboratorParams) (Collaborator, error)
 	UpdateDeveloper(ctx context.Context, arg UpdateDeveloperParams) (Developer, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)

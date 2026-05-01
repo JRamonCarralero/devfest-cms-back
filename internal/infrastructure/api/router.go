@@ -70,6 +70,21 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 	sponsorUsecase := usecase.NewSponsorInteractor(sponsorRepo, eventRepo)
 	sponsorHandler := handlers.NewSponsorHandler(sponsorUsecase)
 
+	// Tracks
+	trackRepo := repository.NewTrackRepository(queries)
+	trackUsecase := usecase.NewTrackInteractor(trackRepo, eventRepo)
+	trackHandler := handlers.NewTrackHandler(trackUsecase)
+
+	// Talks
+	talkRepo := repository.NewTalkRepository(queries)
+	talkUsecase := usecase.NewTalkInteractor(talkRepo, eventRepo)
+	talkHandler := handlers.NewTalkHandler(talkUsecase)
+
+	// Schedulers
+	schedulerRepo := repository.NewSchedulerRepository(queries)
+	schedulerUsecase := usecase.NewSchedulerInteractor(schedulerRepo, trackRepo, talkRepo)
+	schedulerHandler := handlers.NewSchedulerHandler(schedulerUsecase)
+
 	// ---ROUTES ---
 
 	{
@@ -166,6 +181,46 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 		protectedSponsors.POST("", sponsorHandler.Create)
 		protectedSponsors.PUT("/:id", sponsorHandler.Update)
 		protectedSponsors.DELETE("/:id", sponsorHandler.Delete)
+	}
+
+	tracks := api.Group("/tracks")
+	protectedTracks := tracks.Group("/")
+	protectedTracks.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		tracks.GET("/event/:event-id", trackHandler.GetAll)
+		tracks.GET("/id/:id", trackHandler.GetByID)
+		tracks.GET("/event/:event-id/full", trackHandler.GetFullEventSchedule)
+
+		protectedTracks.POST("", trackHandler.Create)
+		protectedTracks.PUT("/:id", trackHandler.Update)
+		protectedTracks.DELETE("/:id", trackHandler.Delete)
+	}
+
+	talks := api.Group("/talks")
+	protectedTalks := talks.Group("/")
+	protectedTalks.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		talks.GET("/event/:event-id", talkHandler.GetAll)
+		talks.GET("/id/:id", talkHandler.GetByID)
+
+		protectedTalks.POST("", talkHandler.Create)
+		protectedTalks.PUT("/:id", talkHandler.Update)
+		protectedTalks.DELETE("/:id", talkHandler.Delete)
+
+		protectedTalks.POST("/speaker/add", talkHandler.AddSpeaker)
+		protectedTalks.DELETE("/speaker/remove", talkHandler.RemoveSpeaker)
+	}
+
+	schedulers := api.Group("/schedulers")
+	protectedSchedulers := schedulers.Group("/")
+	protectedSchedulers.Use(middleware.AuthMiddleware(domain.RoleAdmin, domain.RoleSuperAdmin))
+	{
+		schedulers.GET("/track/:track-id", schedulerHandler.GetAllByTrack)
+		schedulers.GET("/id/:id", schedulerHandler.GetByID)
+
+		protectedSchedulers.POST("", schedulerHandler.Create)
+		protectedSchedulers.PUT("/:id", schedulerHandler.Update)
+		protectedSchedulers.DELETE("/:id", schedulerHandler.Delete)
 	}
 
 	return r

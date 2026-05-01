@@ -16,6 +16,7 @@ A robust and scalable backend service built with **Go** to manage technology com
 - **Driver:** [pgx/v5](https://github.com/jackc/pgx) (PostgreSQL Driver and Toolkit)
 - **Architecture:** Clean Architecture (Entities, Repository Pattern, Dependency Injection)
 - **Testing:** [Testcontainers for Go](https://testcontainers.com/) (Ephemeral Docker databases)
+- **Mocks:** [Mockery](https://github.com/vektra/mockery) (Automatic mock generation for interfaces)
 - **CI/CD:** GitHub Actions (Automated testing pipeline)
 - **Assertions:** [Testify](https://github.com/stretchr/testify)
 
@@ -147,6 +148,9 @@ The project uses the **OpenAPI 3.0 (Swagger)** specification to document all end
 | **Developers** | CRUD, automatic auditing, and filtering. |
 | **Organizers** | CRUD, automatic auditing, and filtering. |
 | **Speakers** | CRUD, automatic auditing, and filtering. |
+| **Tracks** | Management of event stages or rooms, including full event schedule retrieval. |
+| **Talks** | Session management, tags, and speaker assignments (Add/Remove speakers). |
+| **Scheduler** | Time slot management, room assignment, and RFC3339 date parsing. |
 
 ## 🤝 Contribution
 

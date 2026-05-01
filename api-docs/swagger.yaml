@@ -407,6 +407,93 @@ components:
         - $ref: '#/components/schemas/CreateSponsorDTO'
         - $ref: '#/components/schemas/AuditDTO'
 
+    # --- TRACKS ---
+
+    UpdateTrackDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        event_date:
+          type: string
+          format: date
+    CreateTrackDTO:
+      allOf:
+      - $ref: '#/components/schemas/UpdateTrackDTO'
+      - type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+        required: [event_id, name, event_date]
+    TrackResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: '#/components/schemas/CreateTrackDTO'
+        - $ref: '#/components/schemas/AuditDTO'
+    SpeakerTrackResponse:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        avatar_url:
+          type: string
+        company:
+          type: string
+    TalkTrackResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        speakers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeakerTrackResponse'
+    ScheduleEntryTrackResponse:
+      type: object
+      properties:
+        schedule_id:
+          type: string
+          format: uuid
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        room:
+          type: string
+        talk:
+          $ref: '#/components/schemas/TalkTrackResponse'
+    FullTrackScheduleResponse:
+      type: object
+      properties:
+        track_id:
+          type: string
+          format: uuid
+        track_name:
+          type: string
+        event_date:
+          type: string
+          format: date
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEntryTrackResponse'
+
+    # --- SCHEDULERS ---  ToDo
+
 # --- PATHS ---
 
 paths:
@@ -1568,5 +1655,171 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/SponsorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # --- Tracks ---
+
+  /api/v1/tracks:
+    post:
+      summary: Create a Track
+      description: Create a Track
+      tags:
+        - Tracks
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrackDTO'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/tracks/{id}:
+    put:
+      summary: Update a Track by ID
+      description: Update a Track by ID
+      tags:
+        - Tracks
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTrackDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a Track by ID
+      description: Delete a Track by ID
+      tags:
+        - Tracks
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/tracks/event/{event-id}:
+    get:
+      summary: Get all Tracks for an event
+      description: Get all Tracks for an event
+      tags:
+        - Tracks
+      parameters:
+        - name: event-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrackResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/tracks/id/{id}:
+    get:
+      summary: Get a Track by ID
+      description: Get a Track by ID
+      tags:
+        - Tracks
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/tracks/event/{event-id}/full:
+    get:
+      summary: Get all Tracks for an event with full details
+      description: Get all Tracks for an event with full details
+      tags:
+        - Tracks
+      parameters:
+        - name: event-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrackDetailResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
