@@ -31,12 +31,13 @@ func TestSchedulerUsecase(t *testing.T) {
 		talkID := uuid.New()
 		eventID := uuid.New()
 		scheduler := &domain.Scheduler{
-			Track: domain.Track{ID: uuid.New(), EventID: eventID},
+			Track: domain.Track{ID: trackID, EventID: eventID},
+			Talk:  domain.Talk{ID: talkID, EventID: eventID},
 			Room:  "Hall 1",
 		}
 
-		trackRepo.On("GetByID", ctx, trackID).Return(&domain.Event{ID: trackID}, nil).Once()
-		talkRepo.On("GetByID", ctx, talkID).Return(&domain.Event{ID: talkID}, nil).Once()
+		trackRepo.On("GetById", ctx, trackID).Return(&domain.Track{ID: trackID}, nil).Once()
+		talkRepo.On("GetById", ctx, talkID).Return(&domain.Talk{ID: talkID}, nil).Once()
 		schRepo.On("Create", ctx, scheduler).Return(scheduler, nil).Once()
 
 		result, err := interactor.Create(ctx, scheduler)
