@@ -59,7 +59,7 @@ func TestSchedulerHandler(t *testing.T) {
 		jsonBody, _ := json.Marshal(body)
 
 		mockUC.On("Create", ctxMatch, mock.MatchedBy(func(s *domain.Scheduler) bool {
-			return s.Track.ID == trackID && s.Room == room && s.CreatedBy == authUserID
+			return s.Track.ID == trackID && s.Room == room
 		})).Return(&domain.Scheduler{ID: uuid.New(), Room: room}, nil).Once()
 
 		req, _ := http.NewRequest(http.MethodPost, "/scheduler", bytes.NewBuffer(jsonBody))

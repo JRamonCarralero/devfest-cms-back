@@ -130,9 +130,7 @@ func mapToDomainScheduler(row dbgen.ListScheduleByTrackRow) *domain.Scheduler {
 			ID:       utils.PgUUIDToUUID(row.TalkID),
 			Speakers: speakers,
 		},
-		Audit: domain.Audit{
-			UpdatedAt: row.UpdatedAt.Time,
-		},
+		UpdatedAt: row.UpdatedAt.Time,
 	}
 }
 
@@ -160,9 +158,7 @@ func mapToDomainSchedulerRow(row dbgen.GetScheduleEntryByIDRow) *domain.Schedule
 			Description: utils.PgStringToText(row.TalkDescription),
 			Speakers:    speakers,
 		},
-		Audit: domain.Audit{
-			UpdatedAt: row.UpdatedAt.Time,
-		},
+		UpdatedAt: row.UpdatedAt.Time,
 	}
 }
 
@@ -179,8 +175,6 @@ func mapToDomainSchedulerFlat(row dbgen.Scheduler) *domain.Scheduler {
 		Talk: domain.Talk{
 			ID: utils.PgUUIDToUUID(row.TalkID),
 		},
-		Audit: domain.Audit{
-			UpdatedAt: row.UpdatedAt.Time,
-		},
+		UpdatedAt: row.UpdatedAt.Time,
 	}
 }

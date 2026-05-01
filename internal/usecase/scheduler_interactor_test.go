@@ -17,33 +17,36 @@ import (
 func TestSchedulerUsecase(t *testing.T) {
 	ctx := context.Background()
 
-	setup := func() (*mocks.SchedulerRepository, *mocks.EventRepository, domain.SchedulerUsecase) {
+	setup := func() (*mocks.SchedulerRepository, *mocks.TrackRepository, *mocks.TalkRepository, domain.SchedulerUsecase) {
 		sr := new(mocks.SchedulerRepository)
-		er := new(mocks.EventRepository)
-		si := usecase.NewSchedulerInteractor(sr, er)
-		return sr, er, si
+		trr := new(mocks.TrackRepository)
+		tlr := new(mocks.TalkRepository)
+		si := usecase.NewSchedulerInteractor(sr, trr, tlr)
+		return sr, trr, tlr, si
 	}
 
 	t.Run("Create - Success", func(t *testing.T) {
-		schRepo, eventRepo, interactor := setup()
+		schRepo, trackRepo, talkRepo, interactor := setup()
+		trackID := uuid.New()
+		talkID := uuid.New()
 		eventID := uuid.New()
 		scheduler := &domain.Scheduler{
 			Track: domain.Track{ID: uuid.New(), EventID: eventID},
 			Room:  "Hall 1",
 		}
 
-		eventRepo.On("GetByID", ctx, eventID).Return(&domain.Event{ID: eventID}, nil).Once()
+		trackRepo.On("GetByID", ctx, trackID).Return(&domain.Event{ID: trackID}, nil).Once()
+		talkRepo.On("GetByID", ctx, talkID).Return(&domain.Event{ID: talkID}, nil).Once()
 		schRepo.On("Create", ctx, scheduler).Return(scheduler, nil).Once()
 
 		result, err := interactor.Create(ctx, scheduler)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		eventRepo.AssertExpectations(t)
 	})
 
 	t.Run("GetAllByTrack - Success", func(t *testing.T) {
-		schRepo, _, interactor := setup()
+		schRepo, _, _, interactor := setup()
 		trackID := uuid.New()
 		expected := []domain.Scheduler{{ID: uuid.New(), Room: "Lab 2"}}
 
@@ -56,7 +59,7 @@ func TestSchedulerUsecase(t *testing.T) {
 	})
 
 	t.Run("Update - Success with Date Parsing", func(t *testing.T) {
-		schRepo, _, interactor := setup()
+		schRepo, _, _, interactor := setup()
 		id := uuid.New()
 
 		newStartStr := "2026-04-27T10:00:00Z"
@@ -85,7 +88,7 @@ func TestSchedulerUsecase(t *testing.T) {
 	})
 
 	t.Run("Update - Fail Invalid Date Format", func(t *testing.T) {
-		schRepo, _, interactor := setup()
+		schRepo, _, _, interactor := setup()
 		id := uuid.New()
 		badDate := "27-04-2026 10:00"
 
@@ -102,7 +105,7 @@ func TestSchedulerUsecase(t *testing.T) {
 	})
 
 	t.Run("Update - Fail Not Found", func(t *testing.T) {
-		schRepo, _, interactor := setup()
+		schRepo, _, _, interactor := setup()
 		id := uuid.New()
 		schRepo.On("GetByID", ctx, id).Return(nil, errors.New("not found")).Once()
 
@@ -113,7 +116,7 @@ func TestSchedulerUsecase(t *testing.T) {
 	})
 
 	t.Run("Delete - Success", func(t *testing.T) {
-		schRepo, _, interactor := setup()
+		schRepo, _, _, interactor := setup()
 		id := uuid.New()
 		schRepo.On("Delete", ctx, id).Return(nil).Once()
 

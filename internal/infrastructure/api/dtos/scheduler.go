@@ -27,5 +27,5 @@ type SchedulerResponse struct {
 	StartTime  time.Time `json:"start_time"`
 	EndTime    time.Time `json:"end_time"`
 	Room       string    `json:"room"`
-	AuditDTO
+	UpdatedAt  time.Time `json:"updated_at"`
 }

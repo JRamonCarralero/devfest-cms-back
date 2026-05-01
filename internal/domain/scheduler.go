@@ -15,7 +15,7 @@ type Scheduler struct {
 	EndTime   time.Time
 	Duration  time.Duration
 	Room      string
-	Audit
+	UpdatedAt time.Time
 }
 
 type UpdateScheduler struct {

@@ -39,8 +39,8 @@ type TalkTrack struct {
 
 type ScheduleEntryTrack struct {
 	ScheduleID uuid.UUID `json:"schedule_id"`
-	StartTime  time.Time `json:"start_time"`
-	EndTime    time.Time `json:"end_time"`
+	StartTime  string    `json:"start_time"`
+	EndTime    string    `json:"end_time"`
 	Room       string    `json:"room"`
 	Talk       TalkTrack `json:"talk"`
 }

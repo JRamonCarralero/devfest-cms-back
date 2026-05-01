@@ -82,7 +82,7 @@ func SetupRouter(dbPool *pgxpool.Pool) *gin.Engine {
 
 	// Schedulers
 	schedulerRepo := repository.NewSchedulerRepository(queries)
-	schedulerUsecase := usecase.NewSchedulerInteractor(schedulerRepo, eventRepo)
+	schedulerUsecase := usecase.NewSchedulerInteractor(schedulerRepo, trackRepo, talkRepo)
 	schedulerHandler := handlers.NewSchedulerHandler(schedulerUsecase)
 
 	// ---ROUTES ---

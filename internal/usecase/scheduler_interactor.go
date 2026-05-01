@@ -11,14 +11,20 @@ import (
 // schedulerInteractor implements domain.SchedulerUsecase
 type schedulerInteractor struct {
 	schedulerRepository domain.SchedulerRepository
-	eventRepo           domain.EventRepository
+	trackRepository     domain.TrackRepository
+	talkRepository      domain.TalkRepository
 }
 
 // NewSchedulerInteractor creates a new schedulerInteractor
-func NewSchedulerInteractor(schedulerRepository domain.SchedulerRepository, eventRepo domain.EventRepository) domain.SchedulerUsecase {
+func NewSchedulerInteractor(
+	schedulerRepository domain.SchedulerRepository,
+	trackRepository domain.TrackRepository,
+	talkRepository domain.TalkRepository,
+) domain.SchedulerUsecase {
 	return &schedulerInteractor{
 		schedulerRepository: schedulerRepository,
-		eventRepo:           eventRepo,
+		trackRepository:     trackRepository,
+		talkRepository:      talkRepository,
 	}
 }
 
@@ -38,7 +44,12 @@ func (s *schedulerInteractor) GetByID(ctx context.Context, id uuid.UUID) (*domai
 
 // Create
 func (s *schedulerInteractor) Create(ctx context.Context, scheduler *domain.Scheduler) (*domain.Scheduler, error) {
-	_, err := s.eventRepo.GetByID(ctx, scheduler.Track.EventID)
+	_, err := s.trackRepository.GetById(ctx, scheduler.Track.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.talkRepository.GetById(ctx, scheduler.Talk.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +81,6 @@ func (s *schedulerInteractor) Update(ctx context.Context, id uuid.UUID, upSchedu
 		}
 		scheduler.EndTime = endTime
 	}
-	scheduler.UpdatedBy = upScheduler.UpdatedBy
 
 	return s.schedulerRepository.Update(ctx, scheduler)
 }

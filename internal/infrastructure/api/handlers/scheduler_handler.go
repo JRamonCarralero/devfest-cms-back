@@ -74,12 +74,6 @@ func (sh *SchedulerHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	uid, err := utils.GetUserId(ctx)
-	if err != nil {
-		response.HandleError(ctx, err)
-		return
-	}
-
 	startTime, err := time.Parse(time.RFC3339, req.StartTime)
 	if err != nil {
 		newErr := domain.NewAppError(domain.TypeInternal, "Error parsing startDate", err)
@@ -98,9 +92,6 @@ func (sh *SchedulerHandler) Create(ctx *gin.Context) {
 		StartTime: startTime,
 		EndTime:   endTime,
 		Room:      *req.Room,
-		Audit: domain.Audit{
-			CreatedBy: uid,
-		},
 	}
 
 	scheduler, err = sh.usecase.Create(ctx, scheduler)
@@ -177,11 +168,6 @@ func mapToSchedulerResponse(scheduler *domain.Scheduler) *dtos.SchedulerResponse
 		StartTime:  scheduler.StartTime,
 		EndTime:    scheduler.EndTime,
 		Room:       scheduler.Room,
-		AuditDTO: dtos.AuditDTO{
-			CreatedAt: scheduler.CreatedAt,
-			UpdatedAt: scheduler.UpdatedAt,
-			CreatedBy: scheduler.CreatedBy,
-			UpdatedBy: scheduler.UpdatedBy,
-		},
+		UpdatedAt:  scheduler.UpdatedAt,
 	}
 }

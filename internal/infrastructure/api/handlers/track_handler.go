@@ -6,6 +6,7 @@ import (
 	"devfest/internal/infrastructure/api/response"
 	"devfest/internal/infrastructure/api/utils"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -201,10 +202,13 @@ func mapToFullTrackScheduleResponse(track *domain.FullTrackSchedule) dtos.FullTr
 			speakers[j] = dtos.SpeakerTrackResponse(s)
 		}
 
+		stTime, _ := time.Parse("15:04:05", entry.StartTime)
+		endTime, _ := time.Parse("15:04:05", entry.EndTime)
+
 		entries[i] = dtos.ScheduleEntryTrackResponse{
 			ScheduleID: entry.ScheduleID,
-			StartTime:  entry.StartTime,
-			EndTime:    entry.EndTime,
+			StartTime:  stTime,
+			EndTime:    endTime,
 			Room:       entry.Room,
 			Talk: dtos.TalkTrackResponse{
 				ID:          entry.Talk.ID,
